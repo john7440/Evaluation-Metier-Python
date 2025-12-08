@@ -2,10 +2,18 @@
 
 left to right direction
 
-actor Président as p
+actor User as u
+actor President as p
 actor Jury as j
 
-rectangle Prix{
+rectangle System{
+u ----> (Afficher les sélections)
+p ----> (Indiquer les sélections)
+
+p ----> (Indiquer votes)
+j ----> (S’authentifier)
+(S’authentifier) ----> (Voter sélection)
+(S’authentifier) ----> (Voter lauréat)
 
 }
 
