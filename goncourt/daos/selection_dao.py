@@ -46,6 +46,36 @@ class SelectionDao(Dao[Selection]):
             print(f"Erreur lors du read_all de Selection: {e}")
             return []
 
+    def get_current_selection(self):
+        with self.connection.cursor() as cursor:
+            sql = """
+                SELECT b_title, a_first_name, a_last_name, p_name
+                FROM book b
+                INNER JOIN publisher p ON b.Id_Publisher = p.Id_Publisher
+                INNER JOIN author a ON b.Id_Author = a.Id_Author
+                INNER JOIN possess pos ON b.Id_Book = pos.Id_Book
+                WHERE pos.Id_Selection = 1;
+            """
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+
+        if not rows:
+            return "Aucune sélection."
+
+        lines = []
+        for r in rows:
+            lines.append(
+                f"{r['b_title']} — {r['a_first_name']} {r['a_last_name']} (Éditeur : {r['p_name']})"
+            )
+
+        return "\n".join(lines)
+
+    def update_selection(self, book_id, selection_id):
+        with self.connection.cursor() as cursor:
+            sql = """UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s"""
+            cursor.execute(sql, (selection_id, book_id))
+            self.connection.commit()
+
     def update(self, obj: T) -> bool:
         """Update une selection"""
         pass
