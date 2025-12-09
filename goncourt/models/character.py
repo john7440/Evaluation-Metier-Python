@@ -4,9 +4,10 @@ from typing import Optional
 @dataclass
 class Character:
     name: str
+    id_character: Optional[int] = None
 
-    book: Optional["Book"] = None  # type: ignore
+    id_book: Optional["Book"] = None  # type: ignore
 
     def __str__(self):
-        bk = f"{self.book}" if self.book else "No Book"
+        bk = f"{self.id_book}" if self.id_book else "No Book"
         return f"Character: {self.name} (Book: {bk})"
