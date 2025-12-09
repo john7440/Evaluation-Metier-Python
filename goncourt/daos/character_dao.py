@@ -26,11 +26,12 @@ class CharacterDao(Dao[Character]):
                         id_book=row["Id_Book"]
                     )
                 return None
+
         except pymysql.MySQLError as e:
             print(f"Erreur lors du read: {e}")
             return None
 
-    def read_all(self) -> List[T]:
+    def read_all(self) -> List[Character]:
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Character, c_name, Id_Book FROM character_table"
@@ -46,10 +47,10 @@ class CharacterDao(Dao[Character]):
                         )
                     )
                 return characters
+
         except pymysql.MySQLError as e:
             print(f"Erreur lors du read_all Character: {e}")
             return []
-
 
     def update(self, obj: T) -> bool:
         """Update un personnage"""
