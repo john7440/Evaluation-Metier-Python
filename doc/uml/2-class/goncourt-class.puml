@@ -12,7 +12,7 @@ class Author {
 class JuryMember {
   - login : str
   - password : str
-  - role : bool
+  - role : enum
 }
 
 class User {
@@ -32,12 +32,17 @@ class Character {
 }
 
 class Selection {
-  - dateSelection : date
-  - numeroSelection : int
+  - date_selection : date
+  - number_selection : int
 }
 
 class Vote {
-  - nbVoix : int
+  - number_vote : int
+}
+
+class Publisher {
+  - name : str
+  - address : str
 }
 
 Person <|-- Author
@@ -49,6 +54,8 @@ Book "0..*" --> "1" Character
 Book "0..*" --> "1..*" Selection
 JuryMember "0..*" --> "0..*" Vote
 Vote "1" --> "1" Book
+
+Publisher "1" --> "0..*" Book
 
 @enduml
 
