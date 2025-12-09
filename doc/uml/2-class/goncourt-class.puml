@@ -1,0 +1,54 @@
+@startuml
+
+abstract class Person {
+  - first_name : str
+  - last_name : str
+}
+
+class Author {
+  - biography : str
+}
+
+class JuryMember {
+  - login : str
+  - password : str
+  - role : bool
+}
+
+class User {
+}
+
+class Book {
+  - title : str
+  - summary : str
+  - number_pages : int
+  - publication_date : date
+  - isbn : str
+  - price : float
+}
+
+class Character {
+  - name : str
+}
+
+class Selection {
+  - dateSelection : date
+  - numeroSelection : int
+}
+
+class Vote {
+  - nbVoix : int
+}
+
+Person <|-- Author
+Person <|-- User
+Person <|-- JuryMember
+
+Author "1" --> "0..*" Book
+Book "0..*" --> "1" Character
+Book "0..*" --> "1..*" Selection
+JuryMember "0..*" --> "0..*" Vote
+Vote "1" --> "1" Book
+
+@enduml
+
