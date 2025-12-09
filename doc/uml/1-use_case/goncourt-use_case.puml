@@ -6,15 +6,15 @@ actor User as u
 actor President as p
 actor Jury as j
 
-rectangle System{
-u ----> (Afficher les sélections)
-p ----> (Indiquer les sélections)
+rectangle System {
+  u ----> (Afficher les sélections)
+  p ----> (Indiquer une sélection)
+  p ----> (Indiquer les votes)
+  p ----> (S’authentifier)
+  j ----> (S’authentifier)
 
-p ----> (Indiquer votes)
-j ----> (S’authentifier)
-(S’authentifier) ----> (Voter sélection)
-(S’authentifier) ----> (Voter lauréat)
-
+  (Voter sélection) ..> (S’authentifier) : <<include>>
+  (Voter lauréat) ..> (S’authentifier) : <<include>>
 }
 
 @enduml
