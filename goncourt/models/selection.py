@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import  List
+from typing import List, Optional
 from datetime import date
 
 from goncourt.models.book import Book
@@ -10,6 +10,7 @@ from goncourt.models.book import Book
 class Selection:
     date_selection: date
     number_selection: int
+    id_selection: Optional[int] = None
 
     # Une sélection contient plusieurs livres
     books: List[Book] = field(default_factory=list)
