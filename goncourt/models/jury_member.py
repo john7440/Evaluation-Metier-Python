@@ -11,6 +11,7 @@ class JuryRole(Enum):
 @dataclass
 class JuryMember(Person):
     role: JuryRole
+    id_jury: Optional[int] = None
     login: Optional[str] = None
     password: Optional[str] = None
 
