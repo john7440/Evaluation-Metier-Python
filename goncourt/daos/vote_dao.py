@@ -4,7 +4,7 @@ import pymysql
 from goncourt.daos.dao import Dao, T
 from goncourt.models.vote import Vote
 
-class VoteDAO(Dao[Vote]):
+class VoteDao(Dao[Vote]):
     def create(self, obj: T) -> int:
         """Créer un vote"""
         pass
@@ -60,6 +60,29 @@ class VoteDAO(Dao[Vote]):
     def delete(self, obj: T) -> bool:
         """Supprimer un vote"""
         pass
+
+    def vote_for_book(self, book_id):
+        with self.connection.cursor() as cursor:
+            sql = "INSERT INTO vote (Id_Book) VALUES (%s)"
+            cursor.execute(sql, (book_id,))
+            self.connection.commit()
+
+    def get_votes(self):
+        with self.connection.cursor() as cursor:
+            sql = """
+                SELECT b_title, COUNT(*) AS votes
+                FROM vote
+                INNER JOIN book ON vote.Id_Book = book.Id_Book
+                GROUP BY book.Id_Book
+                ORDER BY votes DESC;
+            """
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+
+        text = []
+        for r in rows:
+            text.append(f"{r['b_title']} : {r['votes']} votes")
+        return "\n".join(text)
 
 
 
