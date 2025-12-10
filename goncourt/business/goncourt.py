@@ -4,7 +4,7 @@
 Classe Goncourt
 """
 from typing import List, Optional
-import pymysql
+import pymysql  # type: ignore 
 
 from goncourt.daos.author_dao import AuthorDao
 from goncourt.daos.selection_dao import SelectionDao
@@ -82,3 +82,32 @@ def get_winner(self) -> Optional[dict]:
     except pymysql.MySQLError as e:
         print(f"Erreur get_winner: {e}")
         return None
+
+
+def get_votes_by_selection(self, selection_id: int) -> str:
+    """Récupérer les votes pour une sélection spécifique"""
+    try:
+        with self.connection.cursor() as cursor:
+            sql = """
+                SELECT b.b_title, COUNT(v.Id_Vote) AS votes
+                FROM vote v
+                INNER JOIN book b ON v.Id_Book = b.Id_Book
+                INNER JOIN possess p ON b.Id_Book = p.Id_Book
+                WHERE p.Id_Selection = %s
+                GROUP BY b.Id_Book, b.b_title
+                ORDER BY votes DESC
+            """
+            cursor.execute(sql, (selection_id,))
+            rows = cursor.fetchall()
+
+            if not rows:
+                return f"Aucun vote pour la sélection {selection_id}"
+
+            text = [f"=== Votes pour la sélection {selection_id} ==="]
+            for r in rows:
+                text.append(f"{r['b_title']} : {r['votes']} vote(s)")
+            return "\n".join(text)
+    except pymysql.MySQLError as e:
+        print(f"Erreur get_votes_by_selection: {e}")
+        return "Erreur lors de la récupération des votes"
+
