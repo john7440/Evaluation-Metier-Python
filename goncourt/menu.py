@@ -52,15 +52,18 @@ class Menu:
         while True:
             print("\n=== Menu Utilisateur ===")
             print("1. Afficher la sélection en cours")
+            print("2. Revenir au Menu Principal")
             print("0. Quitter")
 
             choice = input("Votre choix: ")
 
             if choice == "1":
                 self.display_current_selection()
+            elif choice == "2":
+                return
             elif choice == "0":
                 print('\nVous quittez l\'application!')
-                return
+                exit()
             else:
                 print("Option invalide!")
 
@@ -72,6 +75,7 @@ class Menu:
             print("\n=== Menu Membre du Jury ===")
             print("1. Afficher la sélection")
             print("2. Voter pour un livre")
+            print("3. Revenir au Menu Principal")
             print("0. Quitter")
 
             choice = input("Votre choix : ")
@@ -84,9 +88,12 @@ class Menu:
                 self.vote_dao.vote_for_book(book_id)
                 print("Vote enregistré !")
 
+            elif choice == "3":
+                return
+
             elif choice == "0":
                 print('\nVous quittez l\'application!')
-                return
+                exit()
             else:
                 print("Option invalide!")
 
@@ -100,6 +107,7 @@ class Menu:
             print("2. Passer a la sélection suivante")
             print("3. Consulter les votes")
             print("4. Mettre à jour une sélection")
+            print("5. Revenir au Menu Principal")
             print("0. Quitter")
 
             choice = input("Votre choix : ")
@@ -110,30 +118,34 @@ class Menu:
             elif choice == "2":
                 self.selection_dao.go_to_next_selection()
 
+            elif choice == "3":
+                print("\n--- Votes enregistrés ---")
+                print(self.vote_dao.get_votes())
+
             elif choice == "4":
                 book_id = input("ID du livre : ")
                 selection_id = input("Nouvelle sélection (1, 2, 3...) : ")
                 self.selection_dao.update_selection(book_id, selection_id)
                 print("Sélection mise à jour.")
 
-            elif choice == "3":
-                print("\n--- Votes enregistrés ---")
-                print(self.vote_dao.get_votes())
+            elif choice == "5":
+                return
 
             elif choice == "0":
                 print('\nVous quittez l\'application!')
-                return
+                exit()
 
             else:
                 print("Option invalide!")
 
     #Lancement du menu
     def run(self):
-        role = self.authenticate()
+        while True:
+            role = self.authenticate()
 
-        if role == "user":
-            self.menu_user()
-        elif role == "jury":
-            self.menu_jury()
-        elif role == "president":
-            self.menu_president()
+            if role == "user":
+                self.menu_user()
+            elif role == "jury":
+                self.menu_jury()
+            elif role == "president":
+                self.menu_president()
