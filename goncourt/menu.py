@@ -72,7 +72,37 @@ class Menu:
                 print(f"   Votes : {winner['votes']}")
             else:
                 print("Aucun vote enregistré")
-                
+
+    def simulate_vote(self, selection_transition: str):
+        """Simuler les votes selon la transition de sélection"""
+        print("\n--- Simulation de votes ---")
+
+        vote_functions = {
+            "1->2": self.vote_dao.simulate_votes_selection_1_to_2,
+            "2->3": self.vote_dao.simulate_votes_selection_2_to_3,
+            "3->4": self.vote_dao.simulate_votes_selection_3_to_4
+        }
+
+        if selection_transition in vote_functions:
+            vote_functions[selection_transition]()
+        else:
+            print("Transition de sélection invalide")
+
+    def display_menu_and_get_choice(self, menu_title: str, options: list) -> str:
+        """Afficher un menu générique et récupérer le choix"""
+        print(f"\n=== {menu_title} ===")
+        for option in options:
+            print(option)
+        return input("Votre choix : ")
+
+    def handle_exit_and_return(self, choice: str) -> bool:
+        """Gérer les options quitter (0) et retour (variable)
+        Retourne True si on doit sortir du menu, False sinon"""
+        if choice == "0":
+            print('\nVous quittez l\'application!')
+            exit()
+        return False
+
     #Menu user
     def menu_user(self):
         while True:
