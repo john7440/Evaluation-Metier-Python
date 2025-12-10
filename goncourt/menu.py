@@ -75,6 +75,7 @@ class Menu:
             print("\n=== Menu Membre du Jury ===")
             print("1. Afficher la sélection")
             print("2. Voter pour un livre(selection 1 -> 2)")
+            print("3. Voter pour un livre(selection 2 -> 3)")
             print("4. Revenir au Menu Principal")
             print("0. Quitter")
 
@@ -86,6 +87,10 @@ class Menu:
             elif choice == "2":
                 print("\n--- Simulation de votes ---")
                 self.vote_dao.simulate_votes_selection_1_to_2()
+
+            elif choice == "3":
+                print("\n--- Simulation de votes ---")
+                self.vote_dao.simulate_votes_selection_2_to_3()
 
             elif choice == "4":
                 return
