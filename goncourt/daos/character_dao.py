@@ -10,6 +10,7 @@ class CharacterDao(Dao[Character]):
         pass
 
     def read(self, id_entity: int) -> Optional[Character]:
+        """Retourne un personnage d'après son id"""
         try:
             with self.connection.cursor() as cursor:
                 sql = """
@@ -32,6 +33,7 @@ class CharacterDao(Dao[Character]):
             return None
 
     def read_all(self) -> List[Character]:
+        """Retourne une liste de tous les personnages"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Character, c_name, Id_Book FROM character_table"
