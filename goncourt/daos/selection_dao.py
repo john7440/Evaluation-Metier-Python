@@ -1,5 +1,7 @@
 from typing import List, Optional
 import pymysql
+
+from goncourt.models.book import Book
 from goncourt.models.selection import Selection
 from goncourt.daos.dao import Dao, T
 
@@ -100,6 +102,17 @@ class SelectionDao(Dao[Selection]):
             print(f"Erreur lors de get_highest_selection: {e}")
             return None
 
+    def get_books_from_selection(self, selection_id: int) -> List[Book]:
+        with self.connection.cursor() as cursor:
+            sql = """   SELECT b_title, a_first_name, a_last_name, p_name
+                        FROM book b
+                        INNER JOIN publisher p ON b.Id_Publisher = p.Id_Publisher
+                        INNER JOIN author a ON b.Id_Author = a.Id_Author
+                        INNER JOIN possess pos ON b.Id_Book = pos.Id_Book
+                        WHERE pos.Id_Selection = %s;
+                    """
+            cursor.execute(sql, (selection_id,))
+            return cursor.fetchall()
 
     def delete(self, obj: T) -> bool:
         """Supprimer une selection"""
