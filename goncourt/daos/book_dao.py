@@ -16,6 +16,7 @@ class BookDao(Dao[Book]):
         pass
 
     def read(self, id_entity: int) -> Optional[Book]:
+        """Retourner un livre en fonction de son id"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT * FROM book WHERE Id_Book=%s"
