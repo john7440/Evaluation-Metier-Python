@@ -13,7 +13,7 @@ class VoteDao(Dao[Vote]):
         try:
             with self.connection.cursor() as cursor:
                 sql = """
-                            SELECT Id_Vote, number_vote, Id_Book, Id_JuryMember
+                            SELECT Id_Vote,Id_Book, Id_JuryMember
                             FROM vote
                             WHERE Id_Vote = %s
                         """
@@ -22,7 +22,6 @@ class VoteDao(Dao[Vote]):
                 if row:
                     return Vote(
                         id_vote=row["Id_Vote"],
-                        number_vote=row["number_vote"],
                         id_book=row["Id_Book"],
                         id_jury_member=row["Id_JuryMember"]
                     )
@@ -35,7 +34,7 @@ class VoteDao(Dao[Vote]):
     def read_all(self) -> List[Vote]:
         try:
             with self.connection.cursor() as cursor:
-                sql = "SELECT Id_Vote, number_vote, Id_Book, Id_JuryMember FROM vote"
+                sql = "SELECT Id_Vote,Id_Book, Id_JuryMember FROM vote"
                 cursor.execute(sql)
                 rows = cursor.fetchall()
                 votes = []
@@ -43,7 +42,6 @@ class VoteDao(Dao[Vote]):
                     votes.append(
                         Vote(
                             id_vote=row["Id_Vote"],
-                            number_vote=row["number_vote"],
                             id_book=row["Id_Book"],
                             id_jury_member=row["Id_JuryMember"]
                         )
@@ -136,21 +134,21 @@ class VoteDao(Dao[Vote]):
         Simuler les votes pour passer de la sélection 1 à la sélection 2
         """
         votes_data = [
-            (1, 1, 1),
-            (1, 3, 2),
-            (1, 15, 3),
-            (1, 6, 4),
-            (1, 10, 5),
-            (1, 7, 6),
-            (1, 11, 7),
-            (1, 3, 8),
-            (1, 3, 10),
-            (1, 2, 9)
+            (1, 1),
+            (3, 2),
+            (15, 3),
+            (6, 4),
+            (10, 5),
+            (7, 6),
+            (11, 7),
+            (3, 8),
+            (3, 10),
+            (2, 9)
         ]
 
         try:
             with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (v_number_of_vote, Id_Book, Id_JuryMember) VALUES (%s, %s, %s)"
+                sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
                 cursor.executemany(sql, votes_data)
                 self.connection.commit()
                 print(f"{len(votes_data)} votes comptabilisés avec succès !")
@@ -168,21 +166,21 @@ class VoteDao(Dao[Vote]):
         Simuler les votes pour passer de la sélection 1 à la sélection 2
         """
         votes_data = [
-            (1, 1, 1),
-            (1, 1, 4),
-            (1, 3, 6),
-            (1, 1, 2),
-            (1, 1, 3),
-            (1, 3, 10),
-            (1, 3, 5),
-            (1, 3, 7),
-            (1, 3, 8),
-            (1, 3, 9)
+            (1, 1),
+            (1, 4),
+            (3, 6),
+            (1, 2),
+            (1, 3),
+            (3, 10),
+            (3, 5),
+            (3, 7),
+            (3, 8),
+            (3, 9)
         ]
 
         try:
             with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (v_number_of_vote, Id_Book, Id_JuryMember) VALUES (%s, %s, %s)"
+                sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
                 cursor.executemany(sql, votes_data)
                 self.connection.commit()
                 print(f"{len(votes_data)} votes enregistrés avec succès !")
