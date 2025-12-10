@@ -3,7 +3,7 @@
 """
 Classe Goncourt
 """
-from typing import List
+from typing import List, Optional
 import pymysql
 
 from goncourt.daos.author_dao import AuthorDao
@@ -61,3 +61,24 @@ def count_books(self) -> int:
     except pymysql.MySQLError as e:
         print(f"Erreur count_books: {e}")
         return 0
+
+## gestion des votes
+def get_winner(self) -> Optional[dict]:
+    """Récupérer le livre gagnant (celui avec le plus de votes)"""
+    try:
+        with self.connection.cursor() as cursor:
+            sql = """
+                SELECT b.Id_Book, b.b_title, a.a_first_name, a.a_last_name, 
+                       COUNT(v.Id_Vote) AS votes
+                FROM vote v
+                INNER JOIN book b ON v.Id_Book = b.Id_Book
+                INNER JOIN author a ON b.Id_Author = a.Id_Author
+                GROUP BY b.Id_Book, b.b_title, a.a_first_name, a.a_last_name
+                ORDER BY votes DESC
+                LIMIT 1
+            """
+            cursor.execute(sql)
+            return cursor.fetchone()
+    except pymysql.MySQLError as e:
+        print(f"Erreur get_winner: {e}")
+        return None
