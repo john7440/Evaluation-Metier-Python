@@ -3,8 +3,10 @@ import pymysql
 from goncourt.models.selection import Selection
 from goncourt.daos.dao import Dao, T
 
-
 class SelectionDao(Dao[Selection]):
+    def update(self, obj: T) -> bool:
+        pass
+
     def create(self, obj: T) -> int:
         """Créer un selection"""
         pass
@@ -66,19 +68,38 @@ class SelectionDao(Dao[Selection]):
         for r in rows:
             lines.append(
                 f"{r['b_title']} — {r['a_first_name']} {r['a_last_name']} (Éditeur : {r['p_name']})"
+
             )
 
         return "\n".join(lines)
 
-    def update_selection(self, book_id, selection_id):
+    def update_selection(self, book_id, selection_id,):
         with self.connection.cursor() as cursor:
             sql = """UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s"""
             cursor.execute(sql, (selection_id, book_id))
             self.connection.commit()
 
-    def update(self, obj: T) -> bool:
-        """Update une selection"""
-        pass
+    def get_highest_selection(self)-> Optional[Selection]:
+        """
+        Retourne la sélection ayant la valeur s_number la plus élevée
+        Exemple : priorité à 1, puis 2, puis 3...
+        """
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "SELECT Id_Selection, s_date, s_number  FROM selection ORDER BY s_number ASC LIMIT 1"
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                if row:
+                    return Selection(
+                        id_selection=row["Id_Selection"],
+                        date_selection=row["s_date"],
+                        number_selection=row["s_number"]
+                    )
+                return None
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de get_highest_selection: {e}")
+            return None
+
 
     def delete(self, obj: T) -> bool:
         """Supprimer une selection"""
