@@ -44,6 +44,35 @@ class Menu:
         for i,b in enumerate(books, start =1):
             print(f"{i}. {b['b_title']} — {b['a_first_name']} {b['a_last_name']} (Éditeur : {b['p_name']})")
 
+    def show_votes_submenu(self):
+        """Sous-menu pour la consultation des votes"""
+        print("\n=== Consultation des Votes ===")
+        print("1. Voir tous les votes")
+        print("2. Voir les votes de la sélection en cours")
+        print("3. Voir le gagnant actuel")
+
+        sub_choice = input("Votre choix : ")
+
+        if sub_choice == "1":
+            print("\n--- Tous les votes ---")
+            print(self.vote_dao.get_votes())
+
+        elif sub_choice == "2":
+            sel = self.selection_dao.get_active_selection()
+            if sel:
+                print(self.vote_dao.get_votes_by_selection(sel.id_selection))
+            else:
+                print("Aucune sélection active")
+
+        elif sub_choice == "3":
+            winner = self.vote_dao.get_winner()
+            if winner:
+                print(f"\nGagnant actuel : {winner['b_title']}")
+                print(f"   Auteur : {winner['a_first_name']} {winner['a_last_name']}")
+                print(f"   Votes : {winner['votes']}")
+            else:
+                print("Aucun vote enregistré")
+                
     #Menu user
     def menu_user(self):
         while True:
