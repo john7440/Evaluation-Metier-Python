@@ -123,47 +123,38 @@ class Menu:
             else:
                 print("Option invalide!")
 
-    
+
     # Menu Membre du Jury
     def menu_jury(self):
-        while True:
-            print("\n=== Menu Membre du Jury ===")
-            print("1. Afficher la sélection")
-            print("2. Voter pour un livre(selection 1 -> 2)")
-            print("3. Voter pour un livre(selection 2 -> 3)")
-            print("4. Voter pour un livre(selection 3 -> 4)")
-            print("5. Revenir au Menu Principal")
-            print("0. Quitter")
+        options = [
+            "1. Afficher la sélection",
+            "2. Voter pour un livre (sélection 1 -> 2)",
+            "3. Voter pour un livre (sélection 2 -> 3)",
+            "4. Voter pour un livre (sélection 3 -> 4)",
+            "5. Revenir au Menu Principal",
+            "0. Quitter"
+        ]
 
-            choice = input("Votre choix : ")
+        while True:
+            choice = self.display_menu_and_get_choice("Menu Membre du Jury", options)
 
             if choice == "1":
                 self.display_current_selection()
-
             elif choice == "2":
-                print("\n--- Simulation de votes ---")
-                self.vote_dao.simulate_votes_selection_1_to_2()
-
+                self.simulate_vote("1->2")
             elif choice == "3":
-                print("\n--- Simulation de votes ---")
-                self.vote_dao.simulate_votes_selection_2_to_3()
-
+                self.simulate_vote("2->3")
             elif choice == "4":
-                print("\n--- Simulation de votes ---")
-                self.vote_dao.simulate_votes_selection_3_to_4()
-
+                self.simulate_vote("3->4")
             elif choice == "5":
                 return
-
-            elif choice == "0":
-                print('\nVous quittez l\'application!')
-                exit()
+            elif self.handle_exit_and_return(choice):
+                return
             else:
                 print("Option invalide!")
 
-    # ------------------------------
+
     # Menu Président
-    # ------------------------------
     def menu_president(self):
         while True:
             print("\n=== Menu Président ===")
