@@ -15,6 +15,7 @@ class SelectionDao(Dao[Selection]):
         pass
 
     def read(self, id_entity: int) -> Optional[Selection]:
+        """Retourne la selection en fonction de l'id souhaité"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Selection, s_date, s_number  FROM selection WHERE Id_Selection=%s"
@@ -32,6 +33,7 @@ class SelectionDao(Dao[Selection]):
             return None
 
     def read_all(self) -> List[Selection]:
+        """Retourne la liste de toutes les sélections"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Selection, s_date, s_number FROM selection"
@@ -52,6 +54,7 @@ class SelectionDao(Dao[Selection]):
             return []
 
     def get_current_selection(self):
+        """Récupère et affiche la sélection de livres actuellement active"""
         active = self.get_active_selection()
         if not active:
             return "Aucune sélection active."
@@ -82,6 +85,13 @@ class SelectionDao(Dao[Selection]):
         return "\n".join(lines)
 
     def update_selection(self, book_id: int, selection_number: int) -> bool:
+        """
+        Met à jour la sélection d'un livre en le déplaçant vers une autre sélection
+        - book_id (int) : identifiant du livre à déplacer.
+        - selection_number (int) : numéro de la sélection cible.
+        Returns:
+        - bool : True si la mise à jour a réussi sinon False
+        """
         try:
             book_id = int(book_id)
             selection_number = int(selection_number)
@@ -179,6 +189,12 @@ class SelectionDao(Dao[Selection]):
             return False
 
     def get_books_from_selection(self, selection_id: int) -> List[Book]:
+        """
+        Récupère les livres associés à une sélection donnée:
+         - selection_id (int) : identifiant de la sélection
+         Returns:
+         - List[Book] : liste des livres de la sélection
+        """
         with self.connection.cursor() as cursor:
             sql = """   SELECT b_title, a_first_name, a_last_name, p_name
                         FROM book b
@@ -191,6 +207,11 @@ class SelectionDao(Dao[Selection]):
             return cursor.fetchall()
 
     def get_active_selection(self):
+        """
+           Récupère la sélection active (la plus récente)
+           Returns:
+           - Selection | None : objet Selection actif ou None si aucune sélection
+           """
         try:
             with self.connection.cursor() as cursor:
                 sql = """
