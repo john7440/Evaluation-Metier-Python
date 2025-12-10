@@ -155,10 +155,7 @@ class VoteDao(Dao[Vote]):
                 return True
         except pymysql.MySQLError as e:
             print(f"Erreur simulate_votes: {e}")
-            try:
-                self.connection.rollback()
-            except:
-                pass
+            self.connection.rollback()
             return False
 
     def simulate_votes_selection_2_to_3(self):
@@ -187,10 +184,7 @@ class VoteDao(Dao[Vote]):
                 return True
         except pymysql.MySQLError as e:
             print(f"Erreur simulate_votes: {e}")
-            try:
-                self.connection.rollback()
-            except:
-                pass
+            self.connection.rollback()
             return False
 
     def simulate_votes_selection_3_to_4(self):
@@ -219,10 +213,7 @@ class VoteDao(Dao[Vote]):
                 return True
         except pymysql.MySQLError as e:
             print(f"Erreur simulate_votes: {e}")
-            try:
-                self.connection.rollback()
-            except:
-                pass
+            self.connection.rollback()
             return False
 
 
