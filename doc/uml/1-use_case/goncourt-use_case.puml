@@ -1,15 +1,16 @@
 @startuml
 left to right direction
 
-
 actor "Membre du Jury" as jury
 actor Utilisateur as user
 actor Président as president
 
 rectangle "Système Menu" {
+
   note "Note: le système d'authentification n'est pas encore implémenté" as N2
+
   usecase "Authentification Jury" as UC_auth_jury
-  usecase "Authentification président" as UC_auth
+  usecase "Authentification Président" as UC_auth
 
   usecase "Consulter la sélection" as UC_consult
 
@@ -19,20 +20,24 @@ rectangle "Système Menu" {
   usecase "Consulter les votes" as UC_show_votes
 }
 
+' --- Accès direct à la consultation
 user --> UC_consult
+jury --> UC_consult
+president --> UC_consult
 
+' --- Authentifications
 jury --> UC_auth_jury
-
 president --> UC_auth
-UC_auth --> UC_consult
-UC_auth --> UC_sel
-UC_auth --> UC_show_votes
 
-UC_auth_jury --> UC_vote
-UC_auth_jury --> UC_consult
+UC_auth_jury --> UC_vote : <<includes>>
 
-note "Chaque utilisateur peut revenir au menu principal\net quitter l'application à tout moment." as N1
+UC_auth --> UC_show_votes :<<includes>>
+UC_auth --> UC_sel : <<includes>>
+
+note "Tout utilisateur peut consulter la sélection sans authentification.\nLes actions spécifiques nécessitent une authentification.\nTous les utilisateurs peuvent revenir au menu principal ou quitter l'application à tout moment." as N1
 N1 .. user
 N1 .. jury
 N1 .. president
+
 @enduml
+
