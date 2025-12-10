@@ -105,27 +105,26 @@ class Menu:
 
     #Menu user
     def menu_user(self):
-        while True:
-            print("\n=== Menu Utilisateur ===")
-            print("1. Afficher la sélection en cours")
-            print("2. Revenir au Menu Principal")
-            print("0. Quitter")
+        options = [
+            "1. Afficher la sélection en cours",
+            "2. Revenir au Menu Principal",
+            "0. Quitter"
+        ]
 
-            choice = input("Votre choix: ")
+        while True:
+            choice = self.display_menu_and_get_choice("Menu Utilisateur", options)
 
             if choice == "1":
                 self.display_current_selection()
             elif choice == "2":
                 return
-            elif choice == "0":
-                print('\nVous quittez l\'application!')
-                exit()
+            elif self.handle_exit_and_return(choice):
+                return
             else:
                 print("Option invalide!")
 
-    # ------------------------------
+    
     # Menu Membre du Jury
-    # ------------------------------
     def menu_jury(self):
         while True:
             print("\n=== Menu Membre du Jury ===")
