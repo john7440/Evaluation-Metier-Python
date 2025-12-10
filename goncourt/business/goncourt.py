@@ -13,6 +13,7 @@ from goncourt.daos.book_dao import BookDao
 from goncourt.daos.publisher_dao import PublisherDao
 from goncourt.models.book import Book
 
+# gestion des livres
 def search_by_title(self, title: str) -> List[Book]:
     """Rechercher des livres par titre """
     try:
@@ -48,3 +49,15 @@ def get_books_by_publisher(self, publisher_id: int) -> List[Book]:
     except pymysql.MySQLError as e:
         print(f"Erreur get_books_by_publisher: {e}")
         return []
+
+def count_books(self) -> int:
+    """Compter le nombre total de livres"""
+    try:
+        with self.connection.cursor() as cursor:
+            sql = "SELECT COUNT(*) as total FROM book"
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            return row['total'] if row else 0
+    except pymysql.MySQLError as e:
+        print(f"Erreur count_books: {e}")
+        return 0
