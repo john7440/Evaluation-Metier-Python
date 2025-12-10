@@ -10,6 +10,7 @@ class VoteDao(Dao[Vote]):
         pass
 
     def read(self, id_entity: int) -> Optional[Vote]:
+        """Renvoie un vote en fonction de l'id souhaité"""
         try:
             with self.connection.cursor() as cursor:
                 sql = """
@@ -32,6 +33,7 @@ class VoteDao(Dao[Vote]):
 
 
     def read_all(self) -> List[Vote]:
+        """Renvoie une liste de tous les votes"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Vote,Id_Book, Id_JuryMember FROM vote"
@@ -59,13 +61,12 @@ class VoteDao(Dao[Vote]):
         """Supprimer un vote"""
         pass
 
-    def vote_for_book(self, book_id):
-        with self.connection.cursor() as cursor:
-            sql = "INSERT INTO vote (Id_Book) VALUES (%s)"
-            cursor.execute(sql, (book_id,))
-            self.connection.commit()
-
     def get_votes(self):
+        """
+        Récupère et affiche le nombre de votes par livre
+        La requête SQL compte le nombre de votes associés à chaque livre,
+        puis les classe par ordre décroissant
+        """
         with self.connection.cursor() as cursor:
             sql = """
                 SELECT b_title, COUNT(*) AS votes
@@ -145,7 +146,6 @@ class VoteDao(Dao[Vote]):
             (3, 10),
             (2, 9)
         ]
-
         try:
             with self.connection.cursor() as cursor:
                 sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
@@ -160,7 +160,7 @@ class VoteDao(Dao[Vote]):
 
     def simulate_votes_selection_2_to_3(self):
         """
-        Simuler les votes pour passer de la sélection 1 à la sélection 2
+        Simuler les votes pour passer de la sélection 2 à la sélection 3
         """
         votes_data = [
             (1, 1),
@@ -174,7 +174,6 @@ class VoteDao(Dao[Vote]):
             (7, 8),
             (3, 9)
         ]
-
         try:
             with self.connection.cursor() as cursor:
                 sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
@@ -189,7 +188,7 @@ class VoteDao(Dao[Vote]):
 
     def simulate_votes_selection_3_to_4(self):
         """
-        Simuler les votes pour passer de la sélection 1 à la sélection 2
+        Simuler les votes pour passer de la sélection 3 à la sélection 4
         """
         votes_data = [
             (1, 1),
@@ -203,7 +202,6 @@ class VoteDao(Dao[Vote]):
             (3, 8),
             (3, 9)
         ]
-
         try:
             with self.connection.cursor() as cursor:
                 sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
