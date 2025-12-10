@@ -131,5 +131,37 @@ class VoteDao(Dao[Vote]):
             print(f"Erreur get_votes_by_selection: {e}")
             return "Erreur lors de la récupération des votes"
 
+    def simulate_votes_selection_1_to_2(self):
+        """
+        Simuler les votes pour passer de la sélection 1 à la sélection 2
+        """
+        votes_data = [
+            (1, 1, 1),
+            (1, 3, 2),
+            (1, 15, 3),
+            (1, 6, 4),
+            (1, 10, 5),
+            (1, 7, 6),
+            (1, 11, 7),
+            (1, 3, 8),
+            (1, 3, 10),
+            (1, 2, 9)
+        ]
+
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "INSERT INTO vote (v_number_of_vote, Id_Book, Id_JuryMember) VALUES (%s, %s, %s)"
+                cursor.executemany(sql, votes_data)
+                self.connection.commit()
+                print(f"{len(votes_data)} votes comptabilisés avec succès !")
+                return True
+        except pymysql.MySQLError as e:
+            print(f"Erreur simulate_votes: {e}")
+            try:
+                self.connection.rollback()
+            except:
+                pass
+            return False
+
 
 
