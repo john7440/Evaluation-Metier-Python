@@ -1,43 +1,45 @@
 @startuml
 left to right direction
 
+actor "Visiteur" as user
 actor "Membre du Jury" as jury
-actor Utilisateur as user
-actor Président as president
+actor "Président" as president
 
 rectangle "Système Menu" {
 
-  note "Note: le système d'authentification n'est pas encore implémenté" as N2
+  usecase "Choisir son rôle" as UC_role
+
+  note "Le système d'authentification n'est pas encore implémenté." as N2
 
   usecase "Authentification Jury" as UC_auth_jury
   usecase "Authentification Président" as UC_auth
 
   usecase "Consulter la sélection" as UC_consult
-
   usecase "Voter pour un livre" as UC_vote
-
   usecase "Gérer les selections" as UC_sel
   usecase "Consulter les votes" as UC_show_votes
 }
 
-' --- Accès direct à la consultation
-user --> UC_consult
-jury --> UC_consult
-president --> UC_consult
+' --- Tous les rôles commencent par choisir "qui ils sont"
+user --> UC_role
+jury --> UC_role
+president --> UC_role
 
-' --- Authentifications
-jury --> UC_auth_jury
-president --> UC_auth
+' --- Après choix, chaque rôle accède à ses actions :
+UC_role --> UC_consult
 
-UC_auth_jury --> UC_vote : <<includes>>
+' Jury
+UC_role --> UC_auth_jury : si Jury
+UC_auth_jury --> UC_vote : <<include>>
 
-UC_auth --> UC_show_votes :<<includes>>
-UC_auth --> UC_sel : <<includes>>
+' Président
+UC_role --> UC_auth : si Président
+UC_auth --> UC_sel : <<include>>
+UC_auth --> UC_show_votes : <<include>>
 
-note "Tout utilisateur peut consulter la sélection sans authentification.\nLes actions spécifiques nécessitent une authentification.\nTous les utilisateurs peuvent revenir au menu principal ou quitter l'application à tout moment." as N1
+note "Consulter la sélection est accessible à tous sans authentification.\nLe menu demande d’abord de choisir son rôle.\nEnsuite, certaines actions nécessitent une authentification." as N1
 N1 .. user
 N1 .. jury
 N1 .. president
 
 @enduml
-
