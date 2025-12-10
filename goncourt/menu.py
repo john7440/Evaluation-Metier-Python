@@ -1,5 +1,22 @@
 class Menu:
+    """
+      Classe Menu permettant de gérer l'interaction utilisateur
+      pour un système de sélection et de votes de livres.
+
+      Attributs :
+          book_dao : accès aux données des livres
+          selection_dao : accès aux données des sélections
+          vote_dao : accès aux données des votes
+          roles : dictionnaire des rôles disponibles (user, jury, président)
+      """
     def __init__(self, book_dao, selection_dao, vote_dao):
+        """
+        Initialise le menu avec les DAO nécessaires
+        Args :
+        - book_dao : DAO pour les livres
+        - selection_dao : DAO pour les sélections
+        - vote_dao : DAO pour les votes
+        """
         self.book_dao = book_dao
         self.selection_dao = selection_dao
         self.vote_dao = vote_dao
@@ -11,6 +28,11 @@ class Menu:
         }
 
     def authenticate(self) -> str:
+        """
+        Permet à l'utilisateur de choisir son rôle
+        Returns :
+            str : rôle choisi ("user", "jury" ou "president")
+        """
         print("\n=== Connexion ===")
         print("1. Utilisateur")
         print("2. Membre du Jury")
@@ -27,6 +49,9 @@ class Menu:
             return self.authenticate()
 
     def display_current_selection(self):
+        """
+        Affiche la sélection de livres en cours
+        """
         sel = self.selection_dao.get_active_selection()
 
         if not sel:
@@ -105,14 +130,15 @@ class Menu:
             exit()
         return False
 
-    #Menu user
     def menu_user(self):
+        """
+        Menu destiné aux utilisateurs simples.
+        """
         options = [
             "1. Afficher la sélection en cours",
             "2. Revenir au Menu Principal",
             "0. Quitter"
         ]
-
         while True:
             choice = self.display_menu_and_get_choice("Menu Utilisateur", options)
 
@@ -125,9 +151,10 @@ class Menu:
             else:
                 print("Option invalide!")
 
-
-    # Menu Membre du Jury
     def menu_jury(self):
+        """
+        Menu destiné aux membres du jury
+        """
         options = [
             "1. Afficher la sélection",
             "2. Voter pour un livre (sélection 1 -> 2)",
@@ -155,9 +182,10 @@ class Menu:
             else:
                 print("Option invalide!")
 
-
-    # Menu Président
     def menu_president(self):
+        """
+        Menu destiné au président
+        """
         options = [
             "1. Afficher la sélection",
             "2. Passer à la sélection suivante",
@@ -182,8 +210,12 @@ class Menu:
             else:
                 print("Option invalide!")
 
-    #Lancement du menu
+
     def run(self):
+        """
+        Lance le menu principal et redirige vers le menu
+        correspondant au rôle choisi
+        """
         while True:
             role = self.authenticate()
 
