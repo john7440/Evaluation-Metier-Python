@@ -75,11 +75,22 @@ class SelectionDao(Dao[Selection]):
 
         return "\n".join(lines)
 
-    def update_selection(self, book_id, selection_id,):
-        with self.connection.cursor() as cursor:
-            sql = """UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s"""
-            cursor.execute(sql, (selection_id, book_id))
+    def update_selection(self, book_id: int, selection_id: int) -> bool:
+        try:
+            book_id = int(book_id)
+            selection_id = int(selection_id)
+            with self.connection.cursor() as cursor:
+                sql = "UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s"
+                cursor.execute(sql, (selection_id, book_id))
             self.connection.commit()
+            return cursor.rowcount > 0
+        except (ValueError, pymysql.MySQLError) as e:
+            print(f"Erreur update_selection: {e}")
+            try:
+                self.connection.rollback()
+            except Exception as err:
+                print(f"Erreur update_selection: {err}")
+            return False
 
     def get_highest_selection(self)-> Optional[Selection]:
         """
