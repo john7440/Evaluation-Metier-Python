@@ -7,6 +7,10 @@ from goncourt.models.book import Book
 """Le dao des Livres"""
 
 class BookDao(Dao[Book]):
+    def read_all(self) -> List[T]:
+        """Afficher tous les livres"""
+        pass
+
     def create(self, obj: T) -> int:
         """Create a new book"""
         pass
@@ -18,22 +22,20 @@ class BookDao(Dao[Book]):
                 cursor.execute(sql, (id_entity,))
                 row = cursor.fetchone()
                 if row:
-                    return Book(**row)
-                return None
+                    return Book(
+                        title=row["b_title"],
+                        publication_date=row["b_publicationDate"],
+                        pages=row["b_pagesNb"],
+                        id_book= row["Id_Book"],
+                        summary=row["b_summary"],
+                        isbn=row["b_isbn"],
+                        price=row["b_price"],
+                        id_author=row["Id_Author"],
+                        id_publisher=row["Id_Publisher"]
+                    )
         except pymysql.MySQLError as e:
             print(f"Erreur: {e}")
             return None
-
-    def read_all(self) -> List[Book]:
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "SELECT * FROM book"
-                cursor.execute(sql)
-                rows = cursor.fetchall()
-                return [Book(**row) for row in rows]
-        except pymysql.MySQLError as e:
-            print(f"Erreur: {e}")
-            return []
 
     def update(self, obj: T) -> bool:
         """Update an existing book"""
