@@ -126,30 +126,25 @@ class SelectionDao(Dao[Selection]):
             return cursor.fetchall()
 
     def get_active_selection(self):
-        """
-        Retourne la sélection active
-        """
         try:
             with self.connection.cursor() as cursor:
                 sql = """
                     SELECT s.Id_Selection, s.s_date, s.s_number
                     FROM selection s
                     INNER JOIN possess p ON s.Id_Selection = p.Id_Selection
-                    GROUP BY s.Id_Selection
-                    ORDER BY s.s_number ASC
+                    GROUP BY s.Id_Selection, s.s_date, s.s_number
+                    ORDER BY CAST(s.s_number AS UNSIGNED) ASC
                     LIMIT 1;
                 """
                 cursor.execute(sql)
                 row = cursor.fetchone()
-
                 if row:
                     return Selection(
                         id_selection=row["Id_Selection"],
                         date_selection=row["s_date"],
-                        number_selection=row["s_number"]
+                        number_selection=int(row["s_number"])
                     )
                 return None
-
         except pymysql.MySQLError as e:
             print(f"Erreur dans get_active_selection: {e}")
             return None
