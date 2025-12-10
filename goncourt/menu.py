@@ -1,4 +1,3 @@
-
 class Menu:
     def __init__(self, book_dao, selection_dao, vote_dao):
         self.book_dao = book_dao
@@ -19,12 +18,10 @@ class Menu:
 
         choice = input("Sélectionnez votre rôle : ")
 
-        if choice == "1":
-            return "user"
-        elif choice == "2":
-            return "jury"
-        elif choice == "3":
-            return "president"
+        role_map = {"1": "user", "2": "jury", "3": "president"}
+
+        if choice in role_map:
+            return role_map[choice]
         else:
             print("Choix invalide.")
             return self.authenticate()
