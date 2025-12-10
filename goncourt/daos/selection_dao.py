@@ -51,6 +51,12 @@ class SelectionDao(Dao[Selection]):
             return []
 
     def get_current_selection(self):
+        active = self.get_active_selection()
+        if not active:
+            return "Aucune sélection active."
+
+        selection_id = active.id_selection
+
         with self.connection.cursor() as cursor:
             sql = """
                 SELECT b_title, a_first_name, a_last_name, p_name
@@ -58,13 +64,13 @@ class SelectionDao(Dao[Selection]):
                 INNER JOIN publisher p ON b.Id_Publisher = p.Id_Publisher
                 INNER JOIN author a ON b.Id_Author = a.Id_Author
                 INNER JOIN possess pos ON b.Id_Book = pos.Id_Book
-                WHERE pos.Id_Selection = 1;
+                WHERE pos.Id_Selection = %s;
             """
-            cursor.execute(sql)
+            cursor.execute(sql, (selection_id,))
             rows = cursor.fetchall()
 
         if not rows:
-            return "Aucune sélection."
+            return f"Aucun livre dans la sélection {active.number_selection}."
 
         lines = []
         for r in rows:
@@ -75,13 +81,27 @@ class SelectionDao(Dao[Selection]):
 
         return "\n".join(lines)
 
-    def update_selection(self, book_id: int, selection_id: int) -> bool:
+    def update_selection(self, book_id: int, selection_number: int) -> bool:
         try:
             book_id = int(book_id)
-            selection_id = int(selection_id)
+            selection_number = int(selection_number)
+
             with self.connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT Id_Selection FROM selection WHERE s_number = %s",
+                    (selection_number,)
+                )
+                row = cursor.fetchone()
+
+                if not row:
+                    print(f"La sélection {selection_number} n'existe pas !")
+                    return False
+
+                selection_id = row["Id_Selection"]
+
                 sql = "UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s"
                 cursor.execute(sql, (selection_id, book_id))
+
             self.connection.commit()
             return cursor.rowcount > 0
         except (ValueError, pymysql.MySQLError) as e:
@@ -89,29 +109,48 @@ class SelectionDao(Dao[Selection]):
             try:
                 self.connection.rollback()
             except Exception as err:
-                print(f"Erreur update_selection: {err}")
+                print(f"Erreur rollback: {err}")
             return False
 
-    def get_highest_selection(self)-> Optional[Selection]:
+    def go_to_next_selection(self):
         """
-        Retourne la sélection ayant la valeur s_number la plus élevée
-        Exemple : priorité à 1, puis 2, puis 3...
+        Passe à la sélection suivante en incrémentant s_number
         """
         try:
+            current = self.get_active_selection()
+            if not current:
+                print("Aucune sélection active !")
+                return False
+
+            new_number = current.number_selection + 1
+
             with self.connection.cursor() as cursor:
-                sql = "SELECT Id_Selection, s_date, s_number  FROM selection ORDER BY s_number ASC LIMIT 1"
-                cursor.execute(sql)
+                cursor.execute(
+                    "SELECT Id_Selection FROM selection WHERE s_number = %s",
+                    (new_number,)
+                )
                 row = cursor.fetchone()
+
                 if row:
-                    return Selection(
-                        id_selection=row["Id_Selection"],
-                        date_selection=row["s_date"],
-                        number_selection=row["s_number"]
+                    new_selection_id = row["Id_Selection"]
+                else:
+                    cursor.execute(
+                        "INSERT INTO selection (s_date, s_number) VALUES (NOW(), %s)",
+                        (new_number,)
                     )
-                return None
+                    new_selection_id = cursor.lastrowid
+
+            self.connection.commit()
+            print(f"Passage à la sélection {new_number}.")
+            return True
+
         except pymysql.MySQLError as e:
-            print(f"Erreur lors de get_highest_selection: {e}")
-            return None
+            print(f"Erreur dans go_to_next_selection : {e}")
+            try:
+                self.connection.rollback()
+            except:
+                pass
+            return False
 
     def get_books_from_selection(self, selection_id: int) -> List[Book]:
         with self.connection.cursor() as cursor:
@@ -133,7 +172,7 @@ class SelectionDao(Dao[Selection]):
                     FROM selection s
                     INNER JOIN possess p ON s.Id_Selection = p.Id_Selection
                     GROUP BY s.Id_Selection, s.s_date, s.s_number
-                    ORDER BY CAST(s.s_number AS UNSIGNED) ASC
+                    ORDER BY CAST(s.s_number AS UNSIGNED) DESC
                     LIMIT 1;
                 """
                 cursor.execute(sql)
