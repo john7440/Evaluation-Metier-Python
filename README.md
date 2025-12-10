@@ -31,9 +31,4 @@
 - Jupiter
 - GitHub
 
-#### 4. Documentation
-<img width="1605" height="316" alt="goncourt-use_case" src="https://github.com/user-attachments/assets/71b96e9b-49c0-4358-9e61-fe06587a81ce" />
-<img width="436" height="772" alt="goncourt-class" src="https://github.com/user-attachments/assets/66486be9-8f4e-4057-96eb-eb169670aa9d" />
-<img width="1587" height="1003" alt="mcd" src="https://github.com/user-attachments/assets/88118a12-3870-4bdd-86ff-441a4df7916c" />
-
 
