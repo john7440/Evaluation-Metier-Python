@@ -115,6 +115,7 @@ class SelectionDao(Dao[Selection]):
     def go_to_next_selection(self):
         """
         Passe à la sélection suivante en incrémentant s_number
+        et vide la table des votes
         """
         try:
             current = self.get_active_selection()
@@ -125,6 +126,11 @@ class SelectionDao(Dao[Selection]):
             new_number = current.number_selection + 1
 
             with self.connection.cursor() as cursor:
+                # Vider la table des votes
+                cursor.execute("DELETE FROM vote")
+                print("Votes réinitialisés!")
+
+                # Vérifier si la nouvelle sélection existe déjà
                 cursor.execute(
                     "SELECT Id_Selection FROM selection WHERE s_number = %s",
                     (new_number,)
