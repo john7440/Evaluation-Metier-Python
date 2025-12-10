@@ -36,3 +36,15 @@ def get_books_by_author(self, author_id: int) -> List[Book]:
     except pymysql.MySQLError as e:
         print(f"Erreur get_books_by_author: {e}")
         return []
+
+def get_books_by_publisher(self, publisher_id: int) -> List[Book]:
+    """Récupérer tous les livres d'un éditeur"""
+    try:
+        with self.connection.cursor() as cursor:
+            sql = "SELECT * FROM book WHERE Id_Publisher = %s"
+            cursor.execute(sql, (publisher_id,))
+            rows = cursor.fetchall()
+            return [Book(**row) for row in rows]
+    except pymysql.MySQLError as e:
+        print(f"Erreur get_books_by_publisher: {e}")
+        return []
