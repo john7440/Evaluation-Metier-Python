@@ -19,6 +19,7 @@ class AuthorDao(Dao[Author]):
         pass
 
     def read(self, id_entity: int) -> Optional[Author]:
+        """Retourner un auteur en fonction de son id"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Author, a_first_name, a_last_name, a_biography FROM author WHERE Id_Author = %s"
@@ -37,6 +38,7 @@ class AuthorDao(Dao[Author]):
             return None
 
     def read_all(self) -> List[Author]:
+        """Retourne la liste de tous les auteurs"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Author, a_first_name, a_last_name, a_biography FROM author"
