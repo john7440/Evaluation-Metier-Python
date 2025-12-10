@@ -6,12 +6,15 @@ from goncourt.models.publisher import Publisher
 
 class PublisherDao(Dao[Publisher]):
     def delete(self, obj: T) -> bool:
+        """Supprimer un éditeur"""
         pass
 
     def update(self, obj: T) -> bool:
+        """Update un éditeur"""
         pass
 
     def create(self, obj: T) -> int:
+        """Créer un éditeur"""
         pass
 
     def read(self, id_entity: int) -> Optional[Publisher]:
