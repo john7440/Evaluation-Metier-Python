@@ -88,16 +88,18 @@ class Menu:
         else:
             print("Transition de sélection invalide")
 
-    def display_menu_and_get_choice(self, menu_title: str, options: list) -> str:
+    @staticmethod
+    def display_menu_and_get_choice(menu_title: str, options: list) -> str:
         """Afficher un menu générique et récupérer le choix"""
         print(f"\n=== {menu_title} ===")
         for option in options:
             print(option)
         return input("Votre choix : ")
 
-    def handle_exit_and_return(self, choice: str) -> bool:
-        """Gérer les options quitter (0) et retour (variable)
-        Retourne True si on doit sortir du menu, False sinon"""
+    @staticmethod
+    def handle_exit_and_return(choice: str) -> bool:
+        """Gérer les options pour quitter (0) et retour
+        Retourne True si on doit sortir du menu sinon False"""
         if choice == "0":
             print('\nVous quittez l\'application!')
             exit()
@@ -156,57 +158,27 @@ class Menu:
 
     # Menu Président
     def menu_president(self):
-        while True:
-            print("\n=== Menu Président ===")
-            print("1. Afficher la sélection")
-            print("2. Passer a la sélection suivante")
-            print("3. Consulter les votes")
-            print("4. Revenir au Menu Principal")
-            print("0. Quitter")
+        options = [
+            "1. Afficher la sélection",
+            "2. Passer à la sélection suivante",
+            "3. Consulter les votes",
+            "4. Revenir au Menu Principal",
+            "0. Quitter"
+        ]
 
-            choice = input("Votre choix : ")
+        while True:
+            choice = self.display_menu_and_get_choice("Menu Président", options)
 
             if choice == "1":
                 self.display_current_selection()
-
             elif choice == "2":
                 self.selection_dao.go_to_next_selection()
-
             elif choice == "3":
-                print("\n=== Consultation des Votes ===")
-                print("1. Voir tous les votes")
-                print("2. Voir les votes de la sélection en cours")
-                print("3. Voir le gagnant actuel")
-
-                sub_choice = input("Votre choix : ")
-
-                if sub_choice == "1":
-                    print("\n--- Tous les votes ---")
-                    print(self.vote_dao.get_votes())
-
-                elif sub_choice == "2":
-                    sel = self.selection_dao.get_active_selection()
-                    if sel:
-                        print(self.vote_dao.get_votes_by_selection(sel.id_selection))
-                    else:
-                        print("Aucune sélection active")
-
-                elif sub_choice == "3":
-                    winner = self.vote_dao.get_winner()
-                    if winner:
-                        print(f"\nGagnant actuel : {winner['b_title']}")
-                        print(f"   Auteur : {winner['a_first_name']} {winner['a_last_name']}")
-                        print(f"   Votes : {winner['votes']}")
-                    else:
-                        print("Aucun vote enregistré")
-
+                self.show_votes_submenu()
             elif choice == "4":
                 return
-
-            elif choice == "0":
-                print('\nVous quittez l\'application!')
-                exit()
-
+            elif self.handle_exit_and_return(choice):
+                return
             else:
                 print("Option invalide!")
 
