@@ -44,8 +44,8 @@ class Menu:
             print("Aucun livre dans cette sélection")
             return
 
-        for b in books:
-            print(f"- {b['b_title']} — {b['a_first_name']} {b['a_last_name']} (Éditeur : {b['p_name']})")
+        for i,b in enumerate(books, start =1):
+            print(f"{i}. {b['b_title']} — {b['a_first_name']} {b['a_last_name']} (Éditeur : {b['p_name']})")
 
     #Menu user
     def menu_user(self):
@@ -74,8 +74,8 @@ class Menu:
         while True:
             print("\n=== Menu Membre du Jury ===")
             print("1. Afficher la sélection")
-            print("2. Voter pour un livre")
-            print("3. Revenir au Menu Principal")
+            print("2. Voter pour un livre(selection 1 -> 2)")
+            print("4. Revenir au Menu Principal")
             print("0. Quitter")
 
             choice = input("Votre choix : ")
@@ -84,11 +84,10 @@ class Menu:
                 self.display_current_selection()
 
             elif choice == "2":
-                book_id = input("ID du livre pour lequel vous votez : ")
-                self.vote_dao.vote_for_book(book_id)
-                print("Vote enregistré !")
+                print("\n--- Simulation de votes ---")
+                self.vote_dao.simulate_votes_selection_1_to_2()
 
-            elif choice == "3":
+            elif choice == "4":
                 return
 
             elif choice == "0":
@@ -119,8 +118,32 @@ class Menu:
                 self.selection_dao.go_to_next_selection()
 
             elif choice == "3":
-                print("\n--- Votes enregistrés ---")
-                print(self.vote_dao.get_votes())
+                print("\n=== Consultation des Votes ===")
+                print("1. Voir tous les votes")
+                print("2. Voir les votes de la sélection en cours")
+                print("3. Voir le gagnant actuel")
+
+                sub_choice = input("Votre choix : ")
+
+                if sub_choice == "1":
+                    print("\n--- Tous les votes ---")
+                    print(self.vote_dao.get_votes())
+
+                elif sub_choice == "2":
+                    sel = self.selection_dao.get_active_selection()
+                    if sel:
+                        print(self.vote_dao.get_votes_by_selection(sel.id_selection))
+                    else:
+                        print("Aucune sélection active")
+
+                elif sub_choice == "3":
+                    winner = self.vote_dao.get_winner()
+                    if winner:
+                        print(f"\nGagnant actuel : {winner['b_title']}")
+                        print(f"   Auteur : {winner['a_first_name']} {winner['a_last_name']}")
+                        print(f"   Votes : {winner['votes']}")
+                    else:
+                        print("Aucun vote enregistré")
 
             elif choice == "4":
                 book_id = input("ID du livre : ")
