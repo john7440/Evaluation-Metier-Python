@@ -3,14 +3,10 @@
 """
 Classe Goncourt
 """
-from typing import List, Optional
+
+from typing import List
 import pymysql  # type: ignore
 
-from goncourt.daos.author_dao import AuthorDao
-from goncourt.daos.selection_dao import SelectionDao
-from goncourt.daos.vote_dao import VoteDao
-from goncourt.daos.book_dao import BookDao
-from goncourt.daos.publisher_dao import PublisherDao
 from goncourt.models.book import Book
 
 # gestion des livres
