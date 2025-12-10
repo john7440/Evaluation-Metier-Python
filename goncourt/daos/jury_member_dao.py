@@ -11,6 +11,7 @@ class JuryMemberDao(Dao[JuryMember]):
         pass
 
     def read(self, id_entity: int) -> Optional[JuryMember]:
+        """Renvoie un membre du jury en fonction de son id"""
         try:
             with self.connection.cursor() as cursor:
                 sql = """
@@ -33,6 +34,7 @@ class JuryMemberDao(Dao[JuryMember]):
             return None
 
     def read_all(self) -> List[JuryMember]:
+        """Renvoie une liste de tous les membres du jury"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_JuryMember, j_first_name, j_last_name,j_role FROM jurymember"
