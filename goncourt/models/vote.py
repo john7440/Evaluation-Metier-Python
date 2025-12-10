@@ -12,4 +12,4 @@ class Vote:
     def __str__(self):
         jm = f"{self.id_jury_member}" if self.id_jury_member else "Unknown Member"
         bk = f"{self.id_book}" if self.id_book else "Unknown Book"
-        return f"Vote: {self.number_vote} voix pour {bk} par {jm}"
+        return f"Vote: {bk} par {jm}"
