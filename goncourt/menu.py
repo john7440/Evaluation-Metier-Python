@@ -29,6 +29,25 @@ class Menu:
             print("Choix invalide.")
             return self.authenticate()
 
+    def display_current_selection(self):
+        sel = self.selection_dao.get_active_selection()
+
+        if not sel:
+            print("Aucune sélection disponible")
+            return
+
+        print(f"\n>>> Sélection en cours : numéro {sel.number_selection}\n")
+
+        books = self.selection_dao.get_books_from_selection(sel.id_selection)
+
+        if not books:
+            print("Aucun livre dans cette sélection")
+            return
+
+        for b in books:
+            print(f"- {b['b_title']} — {b['a_first_name']} {b['a_last_name']} (Éditeur : {b['p_name']})")
+
+    #Menu user
     def menu_user(self):
         while True:
             print("\n=== Menu Utilisateur ===")
@@ -38,8 +57,7 @@ class Menu:
             choice = input("Votre choix: ")
 
             if choice == "1":
-                print("\n--- Sélection en cours ---")
-                print(self.book_dao.first_selection())
+                self.display_current_selection()
             elif choice == "0":
                 print('\nVous quittez l\'application!')
                 return
@@ -59,8 +77,7 @@ class Menu:
             choice = input("Votre choix : ")
 
             if choice == "1":
-                print("\n--- Sélection en cours ---")
-                print(self.selection_dao.get_current_selection())
+                self.display_current_selection()
 
             elif choice == "2":
                 book_id = input("ID du livre pour lequel vous votez : ")
@@ -71,7 +88,7 @@ class Menu:
                 print('\nVous quittez l\'application!')
                 return
             else:
-                print("Option invalide.")
+                print("Option invalide!")
 
     # ------------------------------
     # Menu Président
@@ -80,17 +97,20 @@ class Menu:
         while True:
             print("\n=== Menu Président ===")
             print("1. Afficher la sélection")
-            print("2. Mettre à jour une sélection")
+            print("2. Passer a la sélection suivante")
             print("3. Consulter les votes")
+            print("4. Mettre à jour une sélection")
             print("0. Quitter")
 
             choice = input("Votre choix : ")
 
             if choice == "1":
-                print("\n--- Sélection en cours ---")
-                print(self.selection_dao.get_current_selection())
+                self.display_current_selection()
 
             elif choice == "2":
+                self.selection_dao.go_to_next_selection()
+
+            elif choice == "4":
                 book_id = input("ID du livre : ")
                 selection_id = input("Nouvelle sélection (1, 2, 3...) : ")
                 self.selection_dao.update_selection(book_id, selection_id)
@@ -103,9 +123,11 @@ class Menu:
             elif choice == "0":
                 print('\nVous quittez l\'application!')
                 return
+
             else:
                 print("Option invalide!")
 
+    #Lancement du menu
     def run(self):
         role = self.authenticate()
 
