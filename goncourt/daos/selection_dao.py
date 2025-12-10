@@ -7,6 +7,7 @@ from goncourt.daos.dao import Dao, T
 
 class SelectionDao(Dao[Selection]):
     def update(self, obj: T) -> bool:
+        """Update une selection"""
         pass
 
     def create(self, obj: T) -> int:
@@ -78,7 +79,6 @@ class SelectionDao(Dao[Selection]):
                 f"{r['b_title']} — {r['a_first_name']} {r['a_last_name']} (Éditeur : {r['p_name']})"
 
             )
-
         return "\n".join(lines)
 
     def update_selection(self, book_id: int, selection_number: int) -> bool:
@@ -106,10 +106,7 @@ class SelectionDao(Dao[Selection]):
             return cursor.rowcount > 0
         except (ValueError, pymysql.MySQLError) as e:
             print(f"Erreur update_selection: {e}")
-            try:
-                self.connection.rollback()
-            except Exception as err:
-                print(f"Erreur rollback: {err}")
+            self.connection.rollback()
             return False
 
     def go_to_next_selection(self):
@@ -178,10 +175,7 @@ class SelectionDao(Dao[Selection]):
 
         except pymysql.MySQLError as e:
             print(f"Erreur dans go_to_next_selection : {e}")
-            try:
-                self.connection.rollback()
-            except:
-                pass
+            self.connection.rollback()
             return False
 
     def get_books_from_selection(self, selection_id: int) -> List[Book]:
