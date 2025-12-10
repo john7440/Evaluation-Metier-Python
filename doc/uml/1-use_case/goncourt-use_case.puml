@@ -17,15 +17,15 @@ rectangle "Système Menu" {
   usecase "Consulter la sélection" as UC_consult
   usecase "Voter pour un livre" as UC_vote
   usecase "Gérer les selections" as UC_sel
-  usecase "Consulter les votes" as UC_show_votes
+  usecase "Gérer les votes" as UC_show_votes
 }
 
-' --- Tous les rôles commencent par choisir "qui ils sont"
+'Tous les rôles commencent par choisir "qui ils sont"
 user --> UC_role
 jury --> UC_role
 president --> UC_role
 
-' --- Après choix, chaque rôle accède à ses actions :
+'Après choix, chaque rôle accède à ses actions :
 UC_role --> UC_consult
 
 ' Jury
