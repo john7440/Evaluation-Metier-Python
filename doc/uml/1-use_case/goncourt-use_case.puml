@@ -1,20 +1,38 @@
 @startuml
-
 left to right direction
 
-actor User as u
-actor President as p
-actor Jury as j
 
-rectangle System {
-  u ----> (Afficher les sélections)
-  p ----> (Indiquer une sélection)
-  p ----> (Indiquer les votes)
-  p ----> (S’authentifier)
-  j ----> (S’authentifier)
+actor "Membre du Jury" as jury
+actor Utilisateur as user
+actor Président as president
 
-  (Voter sélection) ..> (S’authentifier) : <<include>>
-  (Voter lauréat) ..> (S’authentifier) : <<include>>
+rectangle "Système Menu" {
+  note "Note: le système d'authentification n'est pas encore implémenté" as N2
+  usecase "Authentification Jury" as UC_auth_jury
+  usecase "Authentification président" as UC_auth
+
+  usecase "Consulter la sélection" as UC_consult
+
+  usecase "Voter pour un livre" as UC_vote
+
+  usecase "Gérer les selections" as UC_sel
+  usecase "Consulter les votes" as UC_show_votes
 }
 
+user --> UC_consult
+
+jury --> UC_auth_jury
+
+president --> UC_auth
+UC_auth --> UC_consult
+UC_auth --> UC_sel
+UC_auth --> UC_show_votes
+
+UC_auth_jury --> UC_vote
+UC_auth_jury --> UC_consult
+
+note "Chaque utilisateur peut revenir au menu principal\net quitter l'application à tout moment." as N1
+N1 .. user
+N1 .. jury
+N1 .. president
 @enduml
