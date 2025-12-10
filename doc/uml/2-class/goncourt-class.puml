@@ -16,6 +16,7 @@ class JuryMember {
 }
 
 class User {
+ +User : User()
 }
 
 class Book {
@@ -36,8 +37,10 @@ class Selection {
   - number_selection : int
 }
 
-class Vote {
-  - number_vote : int
+class Vote{
+ - id_vote : int
+ - id_book : int
+ - id_jury_member : int
 }
 
 class Publisher {
@@ -51,8 +54,8 @@ Person <|-- JuryMember
 
 Author "1" --> "0..*" Book
 Book "0..*" --> "1" Character
-Book "0..*" --> "1..*" Selection
-JuryMember "0..*" --> "0..*" Vote
+Selection "1..*" --> "0..*" Book
+JuryMember "1" --> "0..*" Vote
 Vote "1" --> "1" Book
 
 Publisher "1" --> "0..*" Book
