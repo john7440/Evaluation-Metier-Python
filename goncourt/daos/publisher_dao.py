@@ -18,6 +18,7 @@ class PublisherDao(Dao[Publisher]):
         pass
 
     def read(self, id_entity: int) -> Optional[Publisher]:
+        """Renvoie un éditeur en fonction de son id"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Publisher, name, address FROM publisher WHERE Id_Publisher = %s"
@@ -35,6 +36,7 @@ class PublisherDao(Dao[Publisher]):
             return None
 
     def read_all(self) -> List[Publisher]:
+        """Renvoie une liste de tous les éditeurs"""
         try:
             with self.connection.cursor() as cursor:
                 sql = "SELECT Id_Publisher, p_name, p_address FROM publisher"
