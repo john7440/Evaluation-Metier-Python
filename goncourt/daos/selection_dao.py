@@ -114,8 +114,11 @@ class SelectionDao(Dao[Selection]):
 
     def go_to_next_selection(self):
         """
-        Passe à la sélection suivante en incrémentant s_number
-        et vide la table des votes
+        Passe à la sélection suivante en :
+        1. Récupérant les livres qui ont des votes
+        2. Créant la nouvelle sélection
+        3. Y plaçant ces livres
+        4. Vidant les votes
         """
         try:
             current = self.get_active_selection()
@@ -126,11 +129,23 @@ class SelectionDao(Dao[Selection]):
             new_number = current.number_selection + 1
 
             with self.connection.cursor() as cursor:
-                # Vider la table des votes
-                cursor.execute("DELETE FROM vote")
-                print("Votes réinitialisés!")
+                # 1. Récupérer les livres qui ont reçu des votes
+                cursor.execute("""
+                    SELECT DISTINCT v.Id_Book
+                    FROM vote v
+                    INNER JOIN possess p ON v.Id_Book = p.Id_Book
+                    WHERE p.Id_Selection = %s
+                """, (current.id_selection,))
 
-                # Vérifier si la nouvelle sélection existe déjà
+                voted_books = [row['Id_Book'] for row in cursor.fetchall()]
+
+                if not voted_books:
+                    print("Aucun livre n'a reçu de vote !")
+                    return False
+
+                print(f"{len(voted_books)} livre(s) sélectionné(s) pour la suite.")
+
+                # 2. Créer ou récupérer la nouvelle sélection
                 cursor.execute(
                     "SELECT Id_Selection FROM selection WHERE s_number = %s",
                     (new_number,)
@@ -146,8 +161,19 @@ class SelectionDao(Dao[Selection]):
                     )
                     new_selection_id = cursor.lastrowid
 
+                # 3. Déplacer les livres votés vers la nouvelle sélection
+                for book_id in voted_books:
+                    cursor.execute(
+                        "UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s",
+                        (new_selection_id, book_id)
+                    )
+
+                # 4. Vider les votes
+                cursor.execute("DELETE FROM vote")
+                print("Votes réinitialisés!")
+
             self.connection.commit()
-            print(f"Passage à la sélection {new_number}.")
+            print(f"Passage à la sélection {new_number} effectué !")
             return True
 
         except pymysql.MySQLError as e:

@@ -12,7 +12,7 @@ class Menu:
         }
 
     def authenticate(self) -> str:
-        print("=== Connexion ===")
+        print("\n=== Connexion ===")
         print("1. Utilisateur")
         print("2. Membre du Jury")
         print("3. Président")
@@ -97,7 +97,7 @@ class Menu:
                 print("\n--- Simulation de votes ---")
                 self.vote_dao.simulate_votes_selection_3_to_4()
 
-            elif choice == "4":
+            elif choice == "5":
                 return
 
             elif choice == "0":
@@ -115,8 +115,7 @@ class Menu:
             print("1. Afficher la sélection")
             print("2. Passer a la sélection suivante")
             print("3. Consulter les votes")
-            print("4. Mettre à jour la sélection")
-            print("5. Revenir au Menu Principal")
+            print("4. Revenir au Menu Principal")
             print("0. Quitter")
 
             choice = input("Votre choix : ")
@@ -156,12 +155,6 @@ class Menu:
                         print("Aucun vote enregistré")
 
             elif choice == "4":
-                book_id = input("ID du livre : ")
-                selection_id = input("Nouvelle sélection (1, 2, 3...) : ")
-                self.selection_dao.update_selection(book_id, selection_id)
-                print("Sélection mise à jour.")
-
-            elif choice == "5":
                 return
 
             elif choice == "0":
