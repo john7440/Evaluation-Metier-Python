@@ -169,6 +169,38 @@ class VoteDao(Dao[Vote]):
             (1, 1),
             (1, 4),
             (3, 6),
+            (2, 2),
+            (2, 3),
+            (3, 10),
+            (3, 5),
+            (3, 7),
+            (7, 8),
+            (3, 9)
+        ]
+
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
+                cursor.executemany(sql, votes_data)
+                self.connection.commit()
+                print(f"{len(votes_data)} votes enregistrés avec succès !")
+                return True
+        except pymysql.MySQLError as e:
+            print(f"Erreur simulate_votes: {e}")
+            try:
+                self.connection.rollback()
+            except:
+                pass
+            return False
+
+    def simulate_votes_selection_3_to_4(self):
+        """
+        Simuler les votes pour passer de la sélection 1 à la sélection 2
+        """
+        votes_data = [
+            (1, 1),
+            (1, 4),
+            (3, 6),
             (1, 2),
             (1, 3),
             (3, 10),

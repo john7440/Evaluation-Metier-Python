@@ -76,7 +76,8 @@ class Menu:
             print("1. Afficher la sélection")
             print("2. Voter pour un livre(selection 1 -> 2)")
             print("3. Voter pour un livre(selection 2 -> 3)")
-            print("4. Revenir au Menu Principal")
+            print("4. Voter pour un livre(selection 3 -> 4)")
+            print("5. Revenir au Menu Principal")
             print("0. Quitter")
 
             choice = input("Votre choix : ")
@@ -91,6 +92,10 @@ class Menu:
             elif choice == "3":
                 print("\n--- Simulation de votes ---")
                 self.vote_dao.simulate_votes_selection_2_to_3()
+
+            elif choice == "4":
+                print("\n--- Simulation de votes ---")
+                self.vote_dao.simulate_votes_selection_3_to_4()
 
             elif choice == "4":
                 return
@@ -110,7 +115,7 @@ class Menu:
             print("1. Afficher la sélection")
             print("2. Passer a la sélection suivante")
             print("3. Consulter les votes")
-            print("4. Mettre à jour une sélection")
+            print("4. Mettre à jour la sélection")
             print("5. Revenir au Menu Principal")
             print("0. Quitter")
 

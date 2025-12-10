@@ -4,7 +4,6 @@ from typing import Optional
 """Class représentant les votes"""
 @dataclass
 class Vote:
-    number_vote: int
     id_vote: Optional[int]= None
 
     id_jury_member: Optional["JuryMember"] = None  # type: ignore
