@@ -7,7 +7,7 @@ from goncourt.models.vote import Vote
 class VoteDao(Dao[Vote]):
     def create(self, obj: T) -> int:
         """Créer un vote"""
-        pass
+        return 0
 
     def read(self, id_entity: int) -> Optional[Vote]:
         """Renvoie un vote en fonction de l'id souhaité"""
@@ -55,11 +55,11 @@ class VoteDao(Dao[Vote]):
 
     def update(self, obj: T) -> bool:
         """Update un vote"""
-        pass
+        return True
 
     def delete(self, obj: T) -> bool:
         """Supprimer un vote"""
-        pass
+        return True
 
     def get_votes(self):
         """

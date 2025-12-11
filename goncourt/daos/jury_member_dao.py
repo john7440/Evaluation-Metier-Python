@@ -8,7 +8,7 @@ from goncourt.models.jury_member import JuryMember
 class JuryMemberDao(Dao[JuryMember]):
     def create(self, obj: T) -> int:
         """Create a new JuryMember """
-        pass
+        return 0
 
     def read(self, id_entity: int) -> Optional[JuryMember]:
         """Renvoie un membre du jury en fonction de son id"""
@@ -57,8 +57,8 @@ class JuryMemberDao(Dao[JuryMember]):
 
     def update(self, obj: T) -> bool:
         """Update a JuryMember"""
-        pass
+        return True
 
     def delete(self, obj: T) -> bool:
         """Delete a JuryMember"""
-        pass
+        return True

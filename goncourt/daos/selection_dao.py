@@ -8,11 +8,11 @@ from goncourt.daos.dao import Dao, T
 class SelectionDao(Dao[Selection]):
     def update(self, obj: T) -> bool:
         """Update une selection"""
-        pass
+        return True
 
     def create(self, obj: T) -> int:
         """Créer un selection"""
-        pass
+        return 0
 
     def read(self, id_entity: int) -> Optional[Selection]:
         """Retourne la selection en fonction de l'id souhaité"""
@@ -237,4 +237,4 @@ class SelectionDao(Dao[Selection]):
 
     def delete(self, obj: T) -> bool:
         """Supprimer une selection"""
-        pass
+        return True
