@@ -9,11 +9,11 @@ from goncourt.models.book import Book
 class BookDao(Dao[Book]):
     def read_all(self) -> List[T]:
         """Afficher tous les livres"""
-        pass
+        return []
 
     def create(self, obj: T) -> int:
         """Create a new book"""
-        pass
+        return 0
 
     def read(self, id_entity: int) -> Optional[Book]:
         """Retourner un livre en fonction de son id"""
@@ -40,8 +40,8 @@ class BookDao(Dao[Book]):
 
     def update(self, obj: T) -> bool:
         """Update an existing book"""
-        pass
+        return True
 
     def delete(self, obj: T) -> bool:
         """Delete an existing book"""
-        pass
+        return True
