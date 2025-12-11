@@ -7,7 +7,7 @@ from goncourt.models.character import Character
 class CharacterDao(Dao[Character]):
     def create(self, obj: T) -> int:
         """Créer un personnage"""
-        pass
+        return 0
 
     def read(self, id_entity: int) -> Optional[Character]:
         """Retourne un personnage d'après son id"""
@@ -56,8 +56,8 @@ class CharacterDao(Dao[Character]):
 
     def update(self, obj: T) -> bool:
         """Update un personnage"""
-        pass
+        return True
 
     def delete(self, obj: T) -> bool:
         """Supprimer un personnage"""
-        pass
+        return True
