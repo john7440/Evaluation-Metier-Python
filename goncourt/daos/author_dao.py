@@ -12,7 +12,7 @@ class AuthorDao(Dao[Author]):
 
     def update(self, obj: T) -> bool:
         """Update un auteur"""
-        return 0
+        return True
 
     def create(self, obj: T) -> int:
         """Créer un auteur"""
@@ -27,10 +27,10 @@ class AuthorDao(Dao[Author]):
                 row = cursor.fetchone()
                 if row:
                     return Author(
-                        id_author=row["Id_Author"],
-                        first_name=row["a_first_name"],
-                        last_name=row["a_last_name"],
-                        biography=row["a_biography"]
+                        id_author=row["Id_Author"], # type: ignore
+                        first_name=row["a_first_name"], # type: ignore
+                        last_name=row["a_last_name"], # type: ignore
+                        biography=row["a_biography"] # type: ignore
                     )
                 return None
         except pymysql.MySQLError as e:
@@ -48,10 +48,10 @@ class AuthorDao(Dao[Author]):
                 for row in rows:
                     authors.append(
                         Author(
-                            id_author=row["Id_Author"],
-                            first_name=row["a_first_name"],
-                            last_name=row["a_last_name"],
-                            biography=row["a_biography"]
+                            id_author=row["Id_Author"], # type: ignore
+                            first_name=row["a_first_name"], # type: ignore
+                            last_name=row["a_last_name"], # type: ignore
+                            biography=row["a_biography"] # type: ignore
                         )
                     )
                 return authors

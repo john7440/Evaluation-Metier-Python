@@ -15,7 +15,7 @@ class BookDao(Dao[Book]):
         """Create a new book"""
         return 0
 
-    def read(self, id_entity: int) -> Optional[Book]:
+    def read(self, id_entity: int) -> Optional[Book]:  # type: ignore
         """Retourner un livre en fonction de son id"""
         try:
             with self.connection.cursor() as cursor:
@@ -24,15 +24,15 @@ class BookDao(Dao[Book]):
                 row = cursor.fetchone()
                 if row:
                     return Book(
-                        title=row["b_title"],
-                        publication_date=row["b_publicationDate"],
-                        pages=row["b_pagesNb"],
-                        id_book= row["Id_Book"],
-                        summary=row["b_summary"],
-                        isbn=row["b_isbn"],
-                        price=row["b_price"],
-                        id_author=row["Id_Author"],
-                        id_publisher=row["Id_Publisher"]
+                        title=row["b_title"], # type: ignore
+                        publication_date=row["b_publicationDate"], # type: ignore
+                        pages=row["b_pagesNb"], # type: ignore
+                        id_book= row["Id_Book"], # type: ignore
+                        summary=row["b_summary"], # type: ignore
+                        isbn=row["b_isbn"], # type: ignore
+                        price=row["b_price"],# type: ignore
+                        id_author=row["Id_Author"], # type: ignore
+                        id_publisher=row["Id_Publisher"] # type: ignore
                     )
         except pymysql.MySQLError as e:
             print(f"Erreur: {e}")
