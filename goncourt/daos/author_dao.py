@@ -8,15 +8,15 @@ from goncourt.daos.dao import Dao
 class AuthorDao(Dao[Author]):
     def delete(self, obj: T) -> bool:
         """Supprimer un auteur"""
-        pass
+        return True
 
     def update(self, obj: T) -> bool:
         """Update un auteur"""
-        pass
+        return 0
 
     def create(self, obj: T) -> int:
         """Créer un auteur"""
-        pass
+        return 0
 
     def read(self, id_entity: int) -> Optional[Author]:
         """Retourner un auteur en fonction de son id"""
