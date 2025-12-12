@@ -5,9 +5,20 @@ from goncourt.daos.dao import Dao, T
 from goncourt.models.vote import Vote
 
 class VoteDao(Dao[Vote]):
-    def create(self, obj: T) -> int:
+    def create(self, obj: Vote) -> int:
         """Créer un vote"""
-        return 0
+        try:
+            with self.connection.cursor() as cursor:
+                sql = """
+                INSERT INTO vote (Id_Book, Id_JuryMember, Id_selection, v_date, v_value) VALUES (%s, %s, %s, %s, %s)
+                """
+                cursor.execute(sql, (obj.id_book,obj.id_jury_member, obj.id_selection, obj.vote_date, obj.value))
+                self.connection.commit()
+                return cursor.lastrowid
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de la création du vote: {e}")
+            self.connection.rollback()
+            return 0
 
     def read(self, id_entity: int) -> Optional[Vote]:
         """Renvoie un vote en fonction de l'id souhaité"""
