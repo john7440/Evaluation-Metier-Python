@@ -248,11 +248,6 @@ class SelectionDao(Dao[Selection]):
         """Supprimer une selection"""
         try:
             with self.connection.cursor() as cursor:
-                #on supprime d'abord les associations dans possess
-                cursor.execute("Delete FROM posses WHERE Id_Selection = %s", (obj.id_selection,))
-                #puis, on supprime les votes liés à cette sélection
-                cursor.execute("DELETE FROM vote WHERE Id_Selection = %s", (obj.id_selection,))
-                # Supprimer la sélection
                 cursor.execute("DELETE FROM selection WHERE Id_Selection = %s", (obj.id_selection,))
                 self.connection.commit()
                 return cursor.rowcount > 0
