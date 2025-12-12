@@ -1,3 +1,4 @@
+from goncourt.daos.jury_member_dao import JuryMemberDao
 from goncourt.daos.book_dao import BookDao
 from goncourt.daos.selection_dao import SelectionDao
 from goncourt.daos.vote_dao import VoteDao
@@ -11,9 +12,11 @@ def main():
     menu = Menu(
         book_dao=BookDao(),
         selection_dao=SelectionDao(),
-        vote_dao=VoteDao()
+        vote_dao=VoteDao(),
+        jury_dao= JuryMemberDao()
     )
     menu.run()
+
 
 if __name__ == "__main__":
     """ Démarre l'application """
