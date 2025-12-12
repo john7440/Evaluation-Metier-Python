@@ -171,7 +171,8 @@ class Menu:
         print(f"\n=== {menu_title} ===")
         for option in options:
             print(option)
-        return input("Votre choix : ")
+        choice = input("Votre choix : ").strip()
+        return choice
 
 
     @staticmethod
@@ -180,7 +181,7 @@ class Menu:
         Retourne True si on doit sortir du menu sinon False"""
         if choice == "0":
             print('\nVous quittez l\'application!')
-            exit()
+            return True
         return False
 
 
@@ -232,7 +233,8 @@ class Menu:
             print("2. Passer à la sélection suivante")
             print("3. Consulter les votes")
             print("4. Voir le gagnant")
-            print("0. Déconnexion")
+            print("5. Déconnexion")
+            print("0. Quitter")
 
             choix = input("Votre choix: ").strip()
 
@@ -267,9 +269,11 @@ class Menu:
                     print("Aucun vote enregistré")
                 input("\nAppuyez sur Entrée pour continuer...")
 
-            elif choix == "0":
+            elif choix == "5":
                 print("Déconnexion...")
                 break
+            elif choix == "0":
+                self.handle_exit_and_return(choix)
 
             else:
                 print("Choix invalide!")
@@ -289,10 +293,13 @@ class Menu:
         while True:
             choice = self.display_menu_and_get_choice("PRIX GONCOURT - Menu Principal", options)
 
+            if not choice:
+                continue
+
             if choice == "1":
                 self.display_current_selection()
 
-            if choice == "2":
+            elif choice == "2":
                 logged_member = self.menu_login()
                 if logged_member:
                     self.menu_president(logged_member)
@@ -302,9 +309,11 @@ class Menu:
                 if logged_member:
                     self.menu_jury(logged_member)
 
-            elif self.handle_exit_and_return(choice):
-                return
-            else:
+            elif choice == "0":
+                print('\nVous quittez l\'application!')
+                break
+
+            elif choice != "":
                 print("Option invalide!")
                 input("\nAppuyez sur Entrée pour continuer...")
 
