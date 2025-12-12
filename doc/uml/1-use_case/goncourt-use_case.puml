@@ -1,45 +1,44 @@
 @startuml
 left to right direction
 
-actor "Visiteur" as user
+actor "Visiteur" as visitor
 actor "Membre du Jury" as jury
 actor "Président" as president
 
 rectangle "Système Menu" {
 
-  usecase "Choisir son rôle" as UC_role
+usecase "Consulter la sélection" as UC_consult
+usecase "S'authentifier" as UC_auth
 
-  note "Le système d'authentification n'est pas encore implémenté." as N2
+note "Le système d'authentification complet\nn'est pas encore implémenté.\nActuellement : choix du rôle." as N2
 
-  usecase "Authentification Jury" as UC_auth_jury
-  usecase "Authentification Président" as UC_auth
-
-  usecase "Consulter la sélection" as UC_consult
-  usecase "Voter pour un livre" as UC_vote
-  usecase "Gérer les selections" as UC_sel
-  usecase "Gérer les votes" as UC_show_votes
+usecase "Voter pour un livre" as UC_vote
+usecase "Gérer les sélections" as UC_sel
+usecase "Consulter les votes" as UC_show_votes
 }
 
-'Tous les rôles commencent par choisir "qui ils sont"
-user --> UC_role
-jury --> UC_role
-president --> UC_role
+' Le visiteur peut consulter sans authentification
+visitor -- UC_consult
 
-'Après choix, chaque rôle accède à ses actions :
-UC_role --> UC_consult
+' Pour accéder aux fonctionnalités avancées, authentification requise
+visitor -- UC_auth
 
-' Jury
-UC_role --> UC_auth_jury : si Jury
-UC_auth_jury --> UC_vote : <<include>>
+' Le jury hérite du visiteur et peut voter
+jury --|> visitor
+jury -- UC_vote
 
-' Président
-UC_role --> UC_auth : si Président
-UC_auth --> UC_sel : <<include>>
-UC_auth --> UC_show_votes : <<include>>
+' Le président hérite du jury (donc peut aussi voter)
+president --|> jury
+president -- UC_sel
+president -- UC_show_votes
 
-note "Consulter la sélection est accessible à tous sans authentification.\nLe menu demande d’abord de choisir son rôle.\nEnsuite, certaines actions nécessitent une authentification." as N1
-N1 .. user
-N1 .. jury
-N1 .. president
+' Relations entre cas d'utilisation
+UC_auth <. UC_vote : <<extend>>
+UC_auth <. UC_sel : <<extend>>
+UC_auth <. UC_show_votes : <<extend>>
+
+note "Tous les utilisateurs (visiteurs) peuvent consulter\nla sélection actuelle sans authentification.\n\nL'authentification est nécessaire pour voter (Jury)\nou gérer les sélections et votes (Président).\n\nLe Président est aussi membre du Jury." as N1
+N1 .. UC_consult
+N1 .. UC_auth
 
 @enduml
