@@ -76,6 +76,30 @@ class Menu:
         input("Appuyez sur Entrée pour continuer...")
         return jury_member
 
+    def menu_login_jury(self):
+        """Menu de connexion pour le jury"""
+        print("=== CONNEXION - Espace Membre du Jury ===")
+
+        login = input("Identifiant: ").strip()
+        password = input("Mot de passe: ").strip()
+
+        if not login or not password:
+            print("\nLogin et mot de passe requis!")
+            input("Appuyez sur Entrée pour continuer...")
+            return None
+
+        jury_member = self.jury_dao.authenticate(login, password)
+
+        if jury_member is None:
+            print("\nIdentifiant invalide! Veuillez réessayer!")
+            input("Appuyez sur Entrée pour continuer...")
+            return None
+
+        print(f"\nBienvenue {jury_member.first_name} {jury_member.last_name}!")
+        input("Appuyez sur Entrée pour continuer...")
+        return jury_member
+
+
 
     def display_current_selection(self):
         """
