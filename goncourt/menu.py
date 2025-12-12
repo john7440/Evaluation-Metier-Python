@@ -22,7 +22,6 @@ class Menu:
         self.vote_dao = vote_dao
 
         self.roles = {
-            "user": "Utilisateur",
             "jury": "Membre du Jury",
             "president": "Président"
         }
@@ -31,16 +30,15 @@ class Menu:
         """
         Permet à l'utilisateur de choisir son rôle
         Returns :
-            str : rôle choisi ("user", "jury" ou "president")
+        str : rôle choisi ("jury" ou "president")
         """
         print("\n=== Connexion ===")
-        print("1. Utilisateur")
-        print("2. Membre du Jury")
-        print("3. Président")
+        print("1. Membre du Jury")
+        print("2. Président")
 
         choice = input("Sélectionnez votre rôle : ")
 
-        role_map = {"1": "user", "2": "jury", "3": "president"}
+        role_map = {"1": "jury", "2": "president"}
 
         if choice in role_map:
             return role_map[choice]
@@ -121,6 +119,7 @@ class Menu:
             print(option)
         return input("Votre choix : ")
 
+
     @staticmethod
     def handle_exit_and_return(choice: str) -> bool:
         """Gérer les options pour quitter (0) et retour
@@ -130,26 +129,6 @@ class Menu:
             exit()
         return False
 
-    def menu_user(self):
-        """
-        Menu destiné aux utilisateurs simples.
-        """
-        options = [
-            "1. Afficher la sélection en cours",
-            "2. Revenir au Menu Principal",
-            "0. Quitter"
-        ]
-        while True:
-            choice = self.display_menu_and_get_choice("Menu Utilisateur", options)
-
-            if choice == "1":
-                self.display_current_selection()
-            elif choice == "2":
-                return
-            elif self.handle_exit_and_return(choice):
-                return
-            else:
-                print("Option invalide!")
 
     def menu_jury(self):
         """
@@ -210,18 +189,34 @@ class Menu:
             else:
                 print("Option invalide!")
 
+    def menu_principal(self):
+        """
+        Menu principal accessible sans authentification
+        """
+        options = [
+            "1. Voir la sélection actuelle",
+            "2. S'authentifier (Jury/Président)",
+            "0. Quitter"
+        ]
+
+        while True:
+            choice = self.display_menu_and_get_choice("Menu Principal", options)
+
+            if choice == "1":
+                self.display_current_selection()
+            elif choice == "2":
+                role = self.authenticate()
+                if role == "jury":
+                    self.menu_jury()
+                elif role == "president":
+                    self.menu_president()
+            elif self.handle_exit_and_return(choice):
+                return
+            else:
+                print("Option invalide!")
 
     def run(self):
         """
-        Lance le menu principal et redirige vers le menu
-        correspondant au rôle choisi
+        Lance le menu principal
         """
-        while True:
-            role = self.authenticate()
-
-            if role == "user":
-                self.menu_user()
-            elif role == "jury":
-                self.menu_jury()
-            elif role == "president":
-                self.menu_president()
+        self.menu_principal()
