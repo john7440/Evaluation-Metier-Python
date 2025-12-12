@@ -255,3 +255,44 @@ class SelectionDao(Dao[Selection]):
             print(f"Erreur lors de la suppression de Selection: {e}")
             self.connection.rollback()
             return False
+
+    def reset_to_initial_state(self):
+        """
+        Réinitialise l'application à son état initial :
+        - Supprime tous les votes
+        - Supprime toutes les sélections sauf la première
+        - Remet tous les livres dans la première sélection
+        """
+        try:
+            with self.connection.cursor() as cursor:
+                print("Réinitialisation des données...")
+
+                #on supprime les votes...
+                cursor.execute("DELETE FROm vote")
+                votes_deleted = cursor.rowcount > 0
+                print(f"{votes_deleted} votes supprimés")
+
+                # ...on supprime les sélections sauf la 1 ère...
+                cursor.execute("DELETE FROM selection WHERE Id_Selection != 1",)
+                selections_deleted = cursor.rowcount > 0
+                print(f"{selections_deleted} sélections supprimées")
+
+                # ..remettre tous les livres dans la première sélection..
+                cursor.execute("DELETE FROM possess")
+                cursor.execute("SELECT Id_Book FROM book ORDER BY Id_Book LIMIT 15")
+                books = cursor.fetchall()
+
+                # Les réinsérer dans la sélection 1
+                for book in books:
+                    cursor.execute(
+                        "INSERT INTO possess (Id_Book, Id_Selection) VALUES (%s, 1)",
+                        (book['Id_Book'],)
+                    )
+                    self.connection.commit()
+                    print("Réinitialisation terminée!\n")
+                    return True
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de la réinitialisation: {e}")
+            self.connection.rollback()
+            return False
+
