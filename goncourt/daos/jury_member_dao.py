@@ -2,7 +2,7 @@ from typing import List, Optional
 import pymysql
 
 from goncourt.daos.dao import Dao, T
-from goncourt.models.jury_member import JuryMember
+from goncourt.models.jury_member import JuryMember, JuryRole
 
 
 class JuryMemberDao(Dao[JuryMember]):
@@ -23,10 +23,10 @@ class JuryMemberDao(Dao[JuryMember]):
                 row = cursor.fetchone()
                 if row:
                     return JuryMember(
-                        id_jury=row["Id_JuryMember"],
-                        first_name=row["j_first_name"],
-                        last_name=row["j_last_name"],
-                        role=row["j_role"]
+                        id_jury=row["Id_JuryMember"],# type: ignore
+                        first_name=row["j_first_name"],# type: ignore
+                        last_name=row["j_last_name"],# type: ignore
+                        role=row["j_role"] # type: ignore
                     )
                 return None
         except pymysql.MySQLError as e:
@@ -44,10 +44,10 @@ class JuryMemberDao(Dao[JuryMember]):
                 for row in rows:
                     jury_members.append(
                         JuryMember(
-                            id_jury=row["Id_JuryMember"],
-                            first_name=row["j_first_name"],
-                            last_name=row["j_last_name"],
-                            role=row["j_role"]
+                            id_jury=row["Id_JuryMember"], # type: ignore
+                            first_name=row["j_first_name"], # type: ignore
+                            last_name=row["j_last_name"], # type: ignore
+                            role=row["j_role"] # type: ignore
                         )
                     )
                 return jury_members
@@ -70,7 +70,7 @@ class JuryMemberDao(Dao[JuryMember]):
                 sql="""
                     SELECT Id_JuryMember, j_first_name, j_last_name, j_role, j_connection_id, j_password, j_role
                     FROM jurymember
-                    WHERE j_connetion_id = %s AND j_password = %s"""
+                    WHERE j_connection_id = %s AND j_password = %s"""
                 cursor.execute(sql, (login, password))
                 row = cursor.fetchone()
 
@@ -81,9 +81,14 @@ class JuryMemberDao(Dao[JuryMember]):
                         last_name=row["j_last_name"], # type: ignore
                         login=row["j_connection_id"], # type: ignore
                         password=row["j_password"], # type: ignore
-                        role=row["j_role"]
+                        role=row["j_role"] # type: ignore
                     )
                 return None
         except pymysql.MySQLError as e:
             print(f"Erreur lors de l'authentification: {e}")
             return None
+
+    @staticmethod
+    def is_president(jury_member : "JuryMember") -> bool:
+        """Vérifie si le membre est le président ou non"""
+        return jury_member.role and jury_member.role == JuryRole.PRESIDENT
