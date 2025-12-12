@@ -319,6 +319,14 @@ class Menu:
 
     def run(self):
         """
-        Lance le menu principal
+        Lance le menu principal et propose une réinitialisation à la fin du programme
         """
-        self.menu_principal()
+        try:
+            self.menu_principal()
+        finally:
+            reset = input("Voulez-vous réinitialiser l'application pour les tests ? (o/n): ").strip().lower()
+
+            if reset == "o":
+                self.selection_dao.reset_to_initial_state()
+            else:
+                print("Application fermée sans réinitialisation!")
