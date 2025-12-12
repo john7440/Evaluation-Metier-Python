@@ -33,9 +33,9 @@ class SelectionDao(Dao[Selection]):
                 row = cursor.fetchone()
                 if row:
                     return Selection(
-                        id_selection=row["Id_Selection"],
-                        date_selection=row["s_date"],
-                        number_selection=row["s_number"]
+                        id_selection=row["Id_Selection"], # type: ignore
+                        date_selection=row["s_date"], # type: ignore
+                        number_selection=row["s_number"] # type: ignore
                     )
                 return None
         except pymysql.MySQLError as e:
@@ -53,9 +53,9 @@ class SelectionDao(Dao[Selection]):
                 for row in rows:
                     selections.append(
                         Selection(
-                            id_selection=row["Id_Selection"],
-                            date_selection=row["s_date"],
-                            number_selection=row["s_number"]
+                            id_selection=row["Id_Selection"], # type: ignore
+                            date_selection=row["s_date"], # type: ignore
+                            number_selection=row["s_number"] # type: ignore
                         )
                     )
                 return selections
@@ -90,7 +90,6 @@ class SelectionDao(Dao[Selection]):
         for r in rows:
             lines.append(
                 f"{r['b_title']} — {r['a_first_name']} {r['a_last_name']} (Éditeur : {r['p_name']})"
-
             )
         return "\n".join(lines)
 
@@ -117,7 +116,7 @@ class SelectionDao(Dao[Selection]):
                     print(f"La sélection {selection_number} n'existe pas !")
                     return False
 
-                selection_id = row["Id_Selection"]
+                selection_id = row["Id_Selection"] # type: ignore
 
                 sql = "UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s"
                 cursor.execute(sql, (selection_id, book_id))
@@ -148,10 +147,9 @@ class SelectionDao(Dao[Selection]):
             with self.connection.cursor() as cursor:
                 # 1. Récupérer les livres qui ont reçu des votes
                 cursor.execute("""
-                    SELECT DISTINCT v.Id_Book
-                    FROM vote v
-                    INNER JOIN possess p ON v.Id_Book = p.Id_Book
-                    WHERE p.Id_Selection = %s
+                    SELECT DISTINCT Id_Book
+                    FROM vote
+                    WHERE Id_Selection = %s
                 """, (current.id_selection,))
 
                 voted_books = [row['Id_Book'] for row in cursor.fetchall()]
@@ -160,7 +158,7 @@ class SelectionDao(Dao[Selection]):
                     print("Aucun livre n'a reçu de vote !")
                     return False
 
-                print(f"{len(voted_books)} livre(s) sélectionné(s) pour la suite.")
+                print(f"{len(voted_books)} livre(s) sélectionné(s) pour la suite !")
 
                 # 2. Créer ou récupérer la nouvelle sélection
                 cursor.execute(
@@ -181,13 +179,15 @@ class SelectionDao(Dao[Selection]):
                 # 3. Déplacer les livres votés vers la nouvelle sélection
                 for book_id in voted_books:
                     cursor.execute(
-                        "UPDATE possess SET Id_Selection = %s WHERE Id_Book = %s",
-                        (new_selection_id, book_id)
+                        "SELECT 1 FROM possess WHERE Id_Book = %s AND Id_Selection = %s",
+                        (book_id, new_selection_id)
                     )
-
-                # 4. Vider les votes
-                cursor.execute("DELETE FROM vote")
-                print("Votes réinitialisés!")
+                    if not cursor.fetchone():
+                        # Insérer dans la nouvelle sélection
+                        cursor.execute(
+                            "INSERT INTO possess (Id_Book, Id_Selection) VALUES (%s, %s)",
+                            (book_id, new_selection_id)
+                        )
 
             self.connection.commit()
             print(f"Passage à la sélection {new_number} effectué !")
@@ -214,7 +214,7 @@ class SelectionDao(Dao[Selection]):
                         WHERE pos.Id_Selection = %s;
                     """
             cursor.execute(sql, (selection_id,))
-            return cursor.fetchall()
+            return cursor.fetchall() # type: ignore
 
     def get_active_selection(self):
         """

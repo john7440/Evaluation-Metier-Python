@@ -162,7 +162,7 @@ class VoteDao(Dao[Vote]):
         Simuler les votes pour passer de la sélection 1 à la sélection 2
         """
         votes_data = [
-            (1, 1, 1, date.today()),  
+            (1, 1, 1, date.today()),
             (3, 2, 1, date.today()),
             (15, 3, 1, date.today()),
             (6, 4, 1, date.today()),
