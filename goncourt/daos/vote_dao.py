@@ -25,17 +25,20 @@ class VoteDao(Dao[Vote]):
         try:
             with self.connection.cursor() as cursor:
                 sql = """
-                            SELECT Id_Vote,Id_Book, Id_JuryMember
-                            FROM vote
-                            WHERE Id_Vote = %s
-                        """
+                     SELECT Id_Vote, Id_Book, Id_JuryMember, v_date, v_value
+                     FROM vote
+                     WHERE Id_Vote = %s
+                     """
                 cursor.execute(sql, (id_entity,))
                 row = cursor.fetchone()
                 if row:
                     return Vote(
-                        id_vote=row["Id_Vote"],
-                        id_book=row["Id_Book"],
-                        id_jury_member=row["Id_JuryMember"]
+                        id_vote=row["Id_Vote"], # type: ignore
+                        id_book=row["Id_Book"], # type: ignore
+                        id_jury_member=row["Id_JuryMember"], # type: ignore
+                        id_selection=row["Id_Selection"], # type: ignore
+                        vote_date=row["v_date"], # type: ignore
+                        value=row["v_value"] # type: ignore
                     )
                 return None
         except pymysql.MySQLError as e:
