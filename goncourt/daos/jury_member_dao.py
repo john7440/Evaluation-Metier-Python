@@ -2,7 +2,7 @@ from typing import List, Optional
 import pymysql
 
 from goncourt.daos.dao import Dao, T
-from goncourt.models.jury_member import JuryMember, JuryRole
+from goncourt.models.jury_member import JuryMember
 
 
 class JuryMemberDao(Dao[JuryMember]):
@@ -91,4 +91,4 @@ class JuryMemberDao(Dao[JuryMember]):
     @staticmethod
     def is_president(jury_member : "JuryMember") -> bool:
         """Vérifie si le membre est le président ou non"""
-        return jury_member.role and jury_member.role == JuryRole.PRESIDENT
+        return jury_member.role == "Président"
