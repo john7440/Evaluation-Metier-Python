@@ -46,6 +46,36 @@ class Menu:
             print("Choix invalide.")
             return self.authenticate()
 
+    def menu_login(self, jury_dao):
+        """Menu de connexion pour le président"""
+        print("\n" + "==== Espace Président ====")
+
+        login = input("Identifiant: ").strip()
+        password = input("Mot de passe: ").strip()
+
+        if not login or not password:
+            print("\nLogin et mot de passe requis!")
+            input("Appuyez sur Entrée pour continuer...")
+            return None
+
+        #verifs
+        jury_member = jury_dao.authenticate(login, password)
+
+        if jury_member is None:
+            print("\nIdentifiant invalide! Veuillez réessayer!")
+            print("Appuyez sur Entré pour continuer")
+            return None
+
+        if not jury_dao.is_president(jury_member):
+            print("Accès réservé au président uniquement!")
+            input("Appuyez sur Entrée pour continuer...")
+            return None
+
+        print(f"Bienvenue {jury_member.first_name} {jury_member.last_name}!")
+        input("Appuyez sur Entrée pour continuer...")
+        return jury_member
+
+
     def display_current_selection(self):
         """
         Affiche la sélection de livres en cours
@@ -163,7 +193,7 @@ class Menu:
 
     def menu_president(self):
         """
-        Menu destiné au président
+        Menu destiné au président après sa connexion
         """
         options = [
             "1. Afficher la sélection",
