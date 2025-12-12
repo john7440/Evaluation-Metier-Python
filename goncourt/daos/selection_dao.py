@@ -1,4 +1,3 @@
-from sys import exec_prefix
 from typing import List, Optional
 import pymysql
 
@@ -245,6 +244,19 @@ class SelectionDao(Dao[Selection]):
             print(f"Erreur dans get_active_selection: {e}")
             return None
 
-    def delete(self, obj: T) -> bool:
+    def delete(self, obj: Selection) -> bool:
         """Supprimer une selection"""
-        return True
+        try:
+            with self.connection.cursor() as cursor:
+                #on supprime d'abord les associations dans possess
+                cursor.execute("Delete FROM posses WHERE Id_Selection = %s", (obj.id_selection,))
+                #puis, on supprime les votes liés à cette sélection
+                cursor.execute("DELETE FROM vote WHERE Id_Selection = %s", (obj.id_selection,))
+                # Supprimer la sélection
+                cursor.execute("DELETE FROM selection WHERE Id_Selection = %s", (obj.id_selection,))
+                self.connection.commit()
+                return cursor.rowcount > 0
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de la suppression de Selection: {e}")
+            self.connection.rollback()
+            return False
