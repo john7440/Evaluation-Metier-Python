@@ -50,16 +50,19 @@ class VoteDao(Dao[Vote]):
         """Renvoie une liste de tous les votes"""
         try:
             with self.connection.cursor() as cursor:
-                sql = "SELECT Id_Vote,Id_Book, Id_JuryMember FROM vote"
+                sql = "SELECT Id_Vote, Id_Book, Id_JuryMember, Id_Selection, v_date, v_value FROM vote"
                 cursor.execute(sql)
                 rows = cursor.fetchall()
                 votes = []
                 for row in rows:
                     votes.append(
                         Vote(
-                            id_vote=row["Id_Vote"],
-                            id_book=row["Id_Book"],
-                            id_jury_member=row["Id_JuryMember"]
+                            id_vote=row["Id_Vote"], # type: ignore
+                            id_book=row["Id_Book"], # type: ignore
+                            id_jury_member=row["Id_JuryMember"], # type: ignore
+                            id_selection=row["Id_Selection"], # type: ignore
+                            vote_date=row["v_date"], # type: ignore
+                            value=row["v_value"] # type: ignore
                         )
                     )
                 return votes
