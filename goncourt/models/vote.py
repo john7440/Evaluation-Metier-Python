@@ -7,7 +7,6 @@ from typing import Optional
 class Vote:
     id_vote: Optional[int]= None
     vote_date: Optional[date]= None
-    value : Optional[int]= None
 
     id_jury_member: Optional["JuryMember"] = None  # type: ignore
     id_book: Optional["Book"] = None  # type: ignore
