@@ -9,7 +9,7 @@ class Menu:
           vote_dao : accès aux données des votes
           roles : dictionnaire des rôles disponibles (user, jury, président)
       """
-    def __init__(self, book_dao, selection_dao, vote_dao):
+    def __init__(self, book_dao, selection_dao, vote_dao, jury_dao):
         """
         Initialise le menu avec les DAO nécessaires
         Args :
@@ -20,6 +20,7 @@ class Menu:
         self.book_dao = book_dao
         self.selection_dao = selection_dao
         self.vote_dao = vote_dao
+        self.jury_dao = jury_dao
 
         self.roles = {
             "jury": "Membre du Jury",
@@ -46,9 +47,9 @@ class Menu:
             print("Choix invalide.")
             return self.authenticate()
 
-    def menu_login(self, jury_dao):
+    def menu_login(self):
         """Menu de connexion pour le président"""
-        print("\n" + "==== Espace Président ====")
+        print("\n" + "==== Connexion - Espace Président ====")
 
         login = input("Identifiant: ").strip()
         password = input("Mot de passe: ").strip()
@@ -59,14 +60,14 @@ class Menu:
             return None
 
         #verifs
-        jury_member = jury_dao.authenticate(login, password)
+        jury_member = self.jury_dao.authenticate(login, password)
 
         if jury_member is None:
             print("\nIdentifiant invalide! Veuillez réessayer!")
             print("Appuyez sur Entré pour continuer")
             return None
 
-        if not jury_dao.is_president(jury_member):
+        if not self.jury_dao.is_president(jury_member):
             print("Accès réservé au président uniquement!")
             input("Appuyez sur Entrée pour continuer...")
             return None
@@ -191,33 +192,57 @@ class Menu:
             else:
                 print("Option invalide!")
 
-    def menu_president(self):
-        """
-        Menu destiné au président après sa connexion
-        """
-        options = [
-            "1. Afficher la sélection",
-            "2. Passer à la sélection suivante",
-            "3. Consulter les votes",
-            "4. Revenir au Menu Principal",
-            "0. Quitter"
-        ]
-
+    def menu_president(self,jury_member):
+        """Menu réservé au président après connexion"""
         while True:
-            choice = self.display_menu_and_get_choice("Menu Président", options)
 
-            if choice == "1":
-                self.display_current_selection()
-            elif choice == "2":
-                self.selection_dao.go_to_next_selection()
-            elif choice == "3":
-                self.show_votes_submenu()
-            elif choice == "4":
-                return
-            elif self.handle_exit_and_return(choice):
-                return
+            print(f"=== ESPACE PRÉSIDENT - {jury_member.first_name} {jury_member.last_name} ===")
+            print("1. Voir la sélection actuelle")
+            print("2. Passer à la sélection suivante")
+            print("3. Consulter les votes")
+            print("4. Voir le gagnant")
+            print("0. Déconnexion")
+
+            choix = input("Votre choix: ").strip()
+
+            if choix == "1":
+                print("\n" + self.selection_dao.get_current_selection())
+                input("\nAppuyez sur Entrée pour continuer...")
+
+            elif choix == "2":
+                confirm = input("Confirmer le passage à la sélection suivante? (o/n): ")
+                if confirm.lower() == 'o':
+                    if self.selection_dao.go_to_next_selection():
+                        print("Sélection suivante créée avec succès!")
+                    else:
+                        print("Erreur lors du passage à la sélection suivante")
+                input("\nAppuyez sur Entrée pour continuer...")
+
+            elif choix == "3":
+                active = self.selection_dao.get_active_selection()
+                if active:
+                    print(self.vote_dao.get_votes_by_selection(active.id_selection))
+                else:
+                    print("Aucune sélection active")
+                input("\nAppuyez sur Entrée pour continuer...")
+
+            elif choix == "4":
+                winner = self.vote_dao.get_winner()
+                if winner:
+                    print(f"\nLivre gagnant: {winner['b_title']}")
+                    print(f"Auteur: {winner['a_first_name']} {winner['a_last_name']}")
+                    print(f"Votes: {winner['votes']}")
+                else:
+                    print("Aucun vote enregistré")
+                input("\nAppuyez sur Entrée pour continuer...")
+
+            elif choix == "0":
+                print("Déconnexion...")
+                break
+
             else:
-                print("Option invalide!")
+                print("Choix invalide!")
+                input("Appuyez sur Entrée pour continuer...")
 
     def menu_principal(self):
         """
@@ -225,21 +250,19 @@ class Menu:
         """
         options = [
             "1. Voir la sélection actuelle",
-            "2. S'authentifier (Jury/Président)",
+            "2. S'authentifier (Président)",
             "0. Quitter"
         ]
 
         while True:
-            choice = self.display_menu_and_get_choice("Menu Principal", options)
+            choice = self.display_menu_and_get_choice("PRIX GONCOURT - Menu Principal", options)
 
             if choice == "1":
                 self.display_current_selection()
-            elif choice == "2":
-                role = self.authenticate()
-                if role == "jury":
-                    self.menu_jury()
-                elif role == "president":
-                    self.menu_president()
+            if choice == "2":
+                logged_member = self.menu_login()
+                if logged_member:
+                    self.menu_president(logged_member)
             elif self.handle_exit_and_return(choice):
                 return
             else:
