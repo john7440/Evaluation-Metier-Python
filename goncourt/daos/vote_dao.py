@@ -11,9 +11,9 @@ class VoteDao(Dao[Vote]):
         try:
             with self.connection.cursor() as cursor:
                 sql = """
-                INSERT INTO vote (Id_Book, Id_JuryMember, Id_selection, v_date, v_value) VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO vote (Id_Book, Id_JuryMember, Id_selection, v_date) VALUES (%s, %s, %s, %s)
                 """
-                cursor.execute(sql, (obj.id_book,obj.id_jury_member, obj.id_selection, obj.vote_date, obj.value))
+                cursor.execute(sql, (obj.id_book,obj.id_jury_member, obj.id_selection, obj.vote_date))
                 self.connection.commit()
                 return cursor.lastrowid
         except pymysql.MySQLError as e:
@@ -38,8 +38,7 @@ class VoteDao(Dao[Vote]):
                         id_book=row["Id_Book"], # type: ignore
                         id_jury_member=row["Id_JuryMember"], # type: ignore
                         id_selection=row["Id_Selection"], # type: ignore
-                        vote_date=row["v_date"], # type: ignore
-                        value=row["v_value"] # type: ignore
+                        vote_date=row["v_date"] # type: ignore
                     )
                 return None
         except pymysql.MySQLError as e:
@@ -51,7 +50,7 @@ class VoteDao(Dao[Vote]):
         """Renvoie une liste de tous les votes"""
         try:
             with self.connection.cursor() as cursor:
-                sql = "SELECT Id_Vote, Id_Book, Id_JuryMember, Id_Selection, v_date, v_value FROM vote"
+                sql = "SELECT Id_Vote, Id_Book, Id_JuryMember, Id_Selection, v_date FROM vote"
                 cursor.execute(sql)
                 rows = cursor.fetchall()
                 votes = []
@@ -62,8 +61,7 @@ class VoteDao(Dao[Vote]):
                             id_book=row["Id_Book"], # type: ignore
                             id_jury_member=row["Id_JuryMember"], # type: ignore
                             id_selection=row["Id_Selection"], # type: ignore
-                            vote_date=row["v_date"], # type: ignore
-                            value=row["v_value"] # type: ignore
+                            vote_date=row["v_date"] # type: ignore
                         )
                     )
                 return votes
@@ -164,7 +162,7 @@ def simulate_votes_selection_1_to_2(self):
     """
     target_selection = 1
 
-    #vérifs
+    # vérifs
     try:
         with self.connection.cursor() as cursor:
             cursor.execute("SELECT Id_Selection FROM selection WHERE s_number = %s", (target_selection,))
@@ -203,7 +201,7 @@ def simulate_votes_selection_2_to_3(self):
     """
     target_selection = 2
 
-    #vérifs
+    # vérifs
     try:
         with self.connection.cursor() as cursor:
             cursor.execute("SELECT Id_Selection FROM selection WHERE s_number = %s", (target_selection,))
@@ -245,7 +243,7 @@ def simulate_votes_selection_3_to_4(self):
     """
     target_selection = 3
 
-    #vérifs
+    # vérifs
     try:
         with self.connection.cursor() as cursor:
             cursor.execute("SELECT Id_Selection FROM selection WHERE s_number = %s", (target_selection,))
