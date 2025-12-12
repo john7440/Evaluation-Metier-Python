@@ -1,3 +1,4 @@
+from sys import exec_prefix
 from typing import List, Optional
 import pymysql
 
@@ -10,9 +11,18 @@ class SelectionDao(Dao[Selection]):
         """Update une selection"""
         return True
 
-    def create(self, obj: T) -> int:
+    def create(self, obj: Selection) -> int:
         """Créer un selection"""
-        return 0
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "INSERT INTO selection(s_date, s_number) VALUES (%s, %s)"
+                cursor.execute(sql,(obj.date_selection, obj.number_selection))
+                self.connection.commit()
+                return cursor.lastrowid
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de la création de Selection: {e}")
+            self.connection.rollback()
+            return 0
 
     def read(self, id_entity: int) -> Optional[Selection]:
         """Retourne la selection en fonction de l'id souhaité"""
