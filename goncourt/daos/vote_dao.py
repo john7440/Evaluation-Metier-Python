@@ -139,7 +139,7 @@ class VoteDao(Dao[Vote]):
                     SELECT b.b_title, COUNT(v.Id_Vote) AS votes
                     FROM vote v
                     INNER JOIN book b ON v.Id_Book = b.Id_Book
-                    WHERE p.Id_Selection = %s
+                    WHERE v.Id_Selection = %s
                     GROUP BY b.Id_Book, b.b_title
                     ORDER BY votes DESC
                 """
@@ -157,87 +157,125 @@ class VoteDao(Dao[Vote]):
             print(f"Erreur get_votes_by_selection: {e}")
             return "Erreur lors de la récupération des votes"
 
-    def simulate_votes_selection_1_to_2(self):
-        """
-        Simuler les votes pour passer de la sélection 1 à la sélection 2
-        """
-        votes_data = [
-            (1, 1, 1, date.today()),
-            (3, 2, 1, date.today()),
-            (15, 3, 1, date.today()),
-            (6, 4, 1, date.today()),
-            (10, 5, 1, date.today()),
-            (7, 6, 1, date.today()),
-            (11, 7, 1, date.today()),
-            (3, 8, 1, date.today()),
-            (3, 10, 1, date.today()),
-            (2, 9, 1, date.today())
-        ]
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
-                cursor.executemany(sql, votes_data)
-                self.connection.commit()
-                print(f"{len(votes_data)} votes comptabilisés avec succès !")
-                return True
-        except pymysql.MySQLError as e:
-            print(f"Erreur simulate_votes: {e}")
-            self.connection.rollback()
-            return False
 
-    def simulate_votes_selection_2_to_3(self):
-        """
-        Simuler les votes pour passer de la sélection 2 à la sélection 3
-        """
-        votes_data = [
-            (1, 1, 2, date.today()),
-            (1, 4, 2, date.today()),
-            (3, 6, 2, date.today()),
-            (2, 2, 2, date.today()),
-            (2, 3, 2, date.today()),
-            (3, 10, 2, date.today()),
-            (3, 5, 2, date.today()),
-            (3, 7, 2, date.today()),
-            (7, 8, 2, date.today()),
-            (3, 9, 2, date.today())
-        ]
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
-                cursor.executemany(sql, votes_data)
-                self.connection.commit()
-                print(f"{len(votes_data)} votes enregistrés avec succès !")
-                return True
-        except pymysql.MySQLError as e:
-            print(f"Erreur simulate_votes: {e}")
-            self.connection.rollback()
-            return False
+def simulate_votes_selection_1_to_2(self):
+    """
+    Simuler les votes pour passer de la sélection 1 à la sélection 2
+    """
+    target_selection = 1
 
-    def simulate_votes_selection_3_to_4(self):
-        """
-        Simuler les votes pour passer de la sélection 3 à la sélection 4
-        """
-        votes_data = [
-            (1, 1, 3, date.today()),
-            (1, 4, 3, date.today()),
-            (3, 6, 3, date.today()),
-            (1, 2, 3, date.today()),
-            (1, 3, 3, date.today()),
-            (3, 10, 3, date.today()),
-            (3, 5, 3, date.today()),
-            (3, 7, 3, date.today()),
-            (3, 8, 3, date.today()),
-            (3, 9, 3, date.today())
-        ]
-        try:
-            with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
-                cursor.executemany(sql, votes_data)
-                self.connection.commit()
-                print(f"{len(votes_data)} votes enregistrés avec succès !")
-                return True
-        except pymysql.MySQLError as e:
-            print(f"Erreur simulate_votes: {e}")
-            self.connection.rollback()
-            return False
+    #vérifs
+    try:
+        with self.connection.cursor() as cursor:
+            cursor.execute("SELECT Id_Selection FROM selection WHERE s_number = %s", (target_selection,))
+            if not cursor.fetchone():
+                print(f"La sélection {target_selection} n'existe pas!")
+                return False
 
+        votes_data = [
+            (1, 1, target_selection, date.today()),
+            (3, 2, target_selection, date.today()),
+            (15, 3, target_selection, date.today()),
+            (6, 4, target_selection, date.today()),
+            (10, 5, target_selection, date.today()),
+            (7, 6, target_selection, date.today()),
+            (11, 7, target_selection, date.today()),
+            (3, 8, target_selection, date.today()),
+            (3, 10, target_selection, date.today()),
+            (2, 9, target_selection, date.today())
+        ]
+
+        with self.connection.cursor() as cursor:
+            sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
+            cursor.executemany(sql, votes_data)
+            self.connection.commit()
+            print(f"{len(votes_data)} votes comptabilisés avec succès pour la sélection {target_selection}!")
+            return True
+    except pymysql.MySQLError as e:
+        print(f"Erreur simulate_votes: {e}")
+        self.connection.rollback()
+        return False
+
+
+def simulate_votes_selection_2_to_3(self):
+    """
+    Simuler les votes pour passer de la sélection 2 à la sélection 3
+    """
+    target_selection = 2
+
+    #vérifs
+    try:
+        with self.connection.cursor() as cursor:
+            cursor.execute("SELECT Id_Selection FROM selection WHERE s_number = %s", (target_selection,))
+            result = cursor.fetchone()
+
+            if not result:
+                cursor.execute("INSERT INTO selection (s_date, s_number) VALUES (NOW(), %s)", (target_selection,))
+                self.connection.commit()
+                print(f"Sélection {target_selection} créée")
+
+        votes_data = [
+            (1, 1, target_selection, date.today()),
+            (1, 4, target_selection, date.today()),
+            (3, 6, target_selection, date.today()),
+            (2, 2, target_selection, date.today()),
+            (2, 3, target_selection, date.today()),
+            (3, 10, target_selection, date.today()),
+            (3, 5, target_selection, date.today()),
+            (3, 7, target_selection, date.today()),
+            (7, 8, target_selection, date.today()),
+            (3, 9, target_selection, date.today())
+        ]
+
+        with self.connection.cursor() as cursor:
+            sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
+            cursor.executemany(sql, votes_data)
+            self.connection.commit()
+            print(f"{len(votes_data)} votes enregistrés avec succès pour la sélection {target_selection}!")
+            return True
+    except pymysql.MySQLError as e:
+        print(f"Erreur simulate_votes: {e}")
+        self.connection.rollback()
+        return False
+
+
+def simulate_votes_selection_3_to_4(self):
+    """
+    Simuler les votes pour passer de la sélection 3 à la sélection 4
+    """
+    target_selection = 3
+
+    #vérifs
+    try:
+        with self.connection.cursor() as cursor:
+            cursor.execute("SELECT Id_Selection FROM selection WHERE s_number = %s", (target_selection,))
+            result = cursor.fetchone()
+
+            if not result:
+                cursor.execute("INSERT INTO selection (s_date, s_number) VALUES (NOW(), %s)", (target_selection,))
+                self.connection.commit()
+                print(f"Sélection {target_selection} créée")
+
+        votes_data = [
+            (1, 1, target_selection, date.today()),
+            (1, 4, target_selection, date.today()),
+            (3, 6, target_selection, date.today()),
+            (1, 2, target_selection, date.today()),
+            (1, 3, target_selection, date.today()),
+            (3, 10, target_selection, date.today()),
+            (3, 5, target_selection, date.today()),
+            (3, 7, target_selection, date.today()),
+            (3, 8, target_selection, date.today()),
+            (3, 9, target_selection, date.today())
+        ]
+
+        with self.connection.cursor() as cursor:
+            sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
+            cursor.executemany(sql, votes_data)
+            self.connection.commit()
+            print(f"{len(votes_data)} votes enregistrés avec succès pour la sélection {target_selection}!")
+            return True
+    except pymysql.MySQLError as e:
+        print(f"Erreur simulate_votes: {e}")
+        self.connection.rollback()
+        return False
