@@ -100,7 +100,6 @@ class Menu:
         return jury_member
 
 
-
     def display_current_selection(self):
         """
         Affiche la sélection de livres en cours
@@ -185,10 +184,13 @@ class Menu:
         return False
 
 
-    def menu_jury(self):
+    def menu_jury(self, jury_member = None):
         """
         Menu destiné aux membres du jury
         """
+        header = "Menu Membre du Jury"
+        if jury_member:
+            header = f"Menu Membre du Jury - {jury_member.first_name} {jury_member.last_name}"
         options = [
             "1. Afficher la sélection",
             "2. Voter pour un livre (sélection 1 -> 2)",
@@ -199,7 +201,7 @@ class Menu:
         ]
 
         while True:
-            choice = self.display_menu_and_get_choice("Menu Membre du Jury", options)
+            choice = self.display_menu_and_get_choice(header, options)
 
             if choice == "1":
                 self.display_current_selection()
@@ -210,11 +212,16 @@ class Menu:
             elif choice == "4":
                 self.simulate_vote("3->4")
             elif choice == "5":
+                if jury_member:
+                    print(f"Au revoir {jury_member.first_name}!")
                 return
             elif self.handle_exit_and_return(choice):
                 return
             else:
                 print("Option invalide!")
+
+            if choice != "5" and choice != "0":
+                input("\nAppuyez sur Entrée pour continuer...")
 
     def menu_president(self,jury_member):
         """Menu réservé au président après connexion"""
@@ -274,7 +281,8 @@ class Menu:
         """
         options = [
             "1. Voir la sélection actuelle",
-            "2. S'authentifier (Président)",
+            "2. Connexion Président",
+            "3. Connexion membre du Jury",
             "0. Quitter"
         ]
 
@@ -283,14 +291,22 @@ class Menu:
 
             if choice == "1":
                 self.display_current_selection()
+
             if choice == "2":
                 logged_member = self.menu_login()
                 if logged_member:
                     self.menu_president(logged_member)
+
+            elif choice == "3":
+                logged_member = self.menu_login_jury()
+                if logged_member:
+                    self.menu_jury(logged_member)
+
             elif self.handle_exit_and_return(choice):
                 return
             else:
                 print("Option invalide!")
+                input("\nAppuyez sur Entrée pour continuer...")
 
     def run(self):
         """
