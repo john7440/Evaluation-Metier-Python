@@ -36,7 +36,6 @@ class Selection {
 
 class Vote {
   - vote_date : date
-  - value : enum
 }
 
 class Publisher {
