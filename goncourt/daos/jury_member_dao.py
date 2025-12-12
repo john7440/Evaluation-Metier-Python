@@ -62,3 +62,28 @@ class JuryMemberDao(Dao[JuryMember]):
     def delete(self, obj: T) -> bool:
         """Delete a JuryMember"""
         return True
+
+    def authenticate(self, login: str, password: str) -> Optional[JuryMember]:
+        """Vérifie les identifiants de connexion et retourne le membre du jury si valide """
+        try:
+            with self.connection.cursor() as cursor:
+                sql="""
+                    SELECT Id_JuryMember, j_first_name, j_last_name, j_role, j_connection_id, j_password, j_role
+                    FROM jurymember
+                    WHERE j_connetion_id = %s AND j_password = %s"""
+                cursor.execute(sql, (login, password))
+                row = cursor.fetchone()
+
+                if row:
+                    return JuryMember(
+                        id_jury=row["Id_JuryMember"], # type: ignore
+                        first_name=row["j_first_name"], # type: ignore
+                        last_name=row["j_last_name"], # type: ignore
+                        login=row["j_connection_id"], # type: ignore
+                        password=row["j_password"], # type: ignore
+                        role=row["j_role"]
+                    )
+                return None
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de l'authentification: {e}")
+            return None
