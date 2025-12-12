@@ -1,8 +1,9 @@
 @startuml
 
+' Classes
 abstract class Person {
   - first_name : str
-  - last_name : str
+  - last_name  : str
 }
 
 class Author {
@@ -10,13 +11,9 @@ class Author {
 }
 
 class JuryMember {
-  - login : str
-  - password : str
+  - login: str
+  - password_hash : str
   - role : enum
-}
-
-class User {
- +User : User()
 }
 
 class Book {
@@ -37,10 +34,9 @@ class Selection {
   - number_selection : int
 }
 
-class Vote{
- - id_vote : int
- - id_book : int
- - id_jury_member : int
+class Vote {
+  - vote_date : date
+  - value : enum
 }
 
 class Publisher {
@@ -48,17 +44,25 @@ class Publisher {
   - address : str
 }
 
+
+' Héritage
 Person <|-- Author
-Person <|-- User
 Person <|-- JuryMember
 
-Author "1" --> "0..*" Book
-Book "0..*" --> "1" Character
-Selection "1..*" --> "0..*" Book
-JuryMember "1" --> "0..*" Vote
-Vote "1" --> "1" Book
 
-Publisher "1" --> "0..*" Book
+' Associations
+Author "1" -- "0..*" Book      : écrit >
+Book "0..*" -- "1" Character   : contient >
+Publisher "1" -- "0..*" Book   : publie >
+Selection "1" -- "1..*" Book : contient >
+Book "1..*" -- "0..*" Selection
+
+' Vote : un membre du jury effectue plusieurs votes
+JuryMember "1" --> "0..*" Vote : effectue >
+' Chaque vote concerne un seul livre
+Vote "1" --> "1" Book          : concerne >
+' Chaque vote appartient à une sélection
+Selection "1" -- "0..*" Vote   : regroupe >
 
 @enduml
 
