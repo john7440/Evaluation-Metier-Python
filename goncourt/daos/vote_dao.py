@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List, Optional
 import pymysql
 
@@ -74,9 +75,19 @@ class VoteDao(Dao[Vote]):
         """Update un vote"""
         return True
 
-    def delete(self, obj: T) -> bool:
+    def delete(self, obj: Vote) -> bool:
         """Supprimer un vote"""
-        return True
+        try:
+            with self.connection.cursor() as cursor:
+                sql = "DELETE FROM vote WHERE Id_Vote = %s"
+                cursor.execute(sql, (obj.id_vote,))
+                self.connection.commit()
+                return cursor.rowcount > 0
+        except pymysql.MySQLError as e:
+            print(f"Erreur lors de la suppression du vote: {e}")
+            self.connection.rollback()
+            return False
+
 
     def get_votes(self):
         """
@@ -115,7 +126,7 @@ class VoteDao(Dao[Vote]):
                     LIMIT 1
                 """
                 cursor.execute(sql)
-                return cursor.fetchone()
+                return cursor.fetchone()  # type: ignore
         except pymysql.MySQLError as e:
             print(f"Erreur get_winner: {e}")
             return None
@@ -128,7 +139,6 @@ class VoteDao(Dao[Vote]):
                     SELECT b.b_title, COUNT(v.Id_Vote) AS votes
                     FROM vote v
                     INNER JOIN book b ON v.Id_Book = b.Id_Book
-                    INNER JOIN possess p ON b.Id_Book = p.Id_Book
                     WHERE p.Id_Selection = %s
                     GROUP BY b.Id_Book, b.b_title
                     ORDER BY votes DESC
@@ -141,7 +151,7 @@ class VoteDao(Dao[Vote]):
 
                 text = [f"=== Votes pour la sélection {selection_id} ==="]
                 for r in rows:
-                    text.append(f"{r['b_title']} : {r['votes']} vote(s)")
+                    text.append(f"{r['b_title']} : {r['votes']} vote(s)")  # type: ignore
                 return "\n".join(text)
         except pymysql.MySQLError as e:
             print(f"Erreur get_votes_by_selection: {e}")
@@ -152,20 +162,20 @@ class VoteDao(Dao[Vote]):
         Simuler les votes pour passer de la sélection 1 à la sélection 2
         """
         votes_data = [
-            (1, 1),
-            (3, 2),
-            (15, 3),
-            (6, 4),
-            (10, 5),
-            (7, 6),
-            (11, 7),
-            (3, 8),
-            (3, 10),
-            (2, 9)
+            (1, 1, 1, date.today()),  
+            (3, 2, 1, date.today()),
+            (15, 3, 1, date.today()),
+            (6, 4, 1, date.today()),
+            (10, 5, 1, date.today()),
+            (7, 6, 1, date.today()),
+            (11, 7, 1, date.today()),
+            (3, 8, 1, date.today()),
+            (3, 10, 1, date.today()),
+            (2, 9, 1, date.today())
         ]
         try:
             with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
+                sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
                 cursor.executemany(sql, votes_data)
                 self.connection.commit()
                 print(f"{len(votes_data)} votes comptabilisés avec succès !")
@@ -180,20 +190,20 @@ class VoteDao(Dao[Vote]):
         Simuler les votes pour passer de la sélection 2 à la sélection 3
         """
         votes_data = [
-            (1, 1),
-            (1, 4),
-            (3, 6),
-            (2, 2),
-            (2, 3),
-            (3, 10),
-            (3, 5),
-            (3, 7),
-            (7, 8),
-            (3, 9)
+            (1, 1, 2, date.today()),
+            (1, 4, 2, date.today()),
+            (3, 6, 2, date.today()),
+            (2, 2, 2, date.today()),
+            (2, 3, 2, date.today()),
+            (3, 10, 2, date.today()),
+            (3, 5, 2, date.today()),
+            (3, 7, 2, date.today()),
+            (7, 8, 2, date.today()),
+            (3, 9, 2, date.today())
         ]
         try:
             with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
+                sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
                 cursor.executemany(sql, votes_data)
                 self.connection.commit()
                 print(f"{len(votes_data)} votes enregistrés avec succès !")
@@ -208,20 +218,20 @@ class VoteDao(Dao[Vote]):
         Simuler les votes pour passer de la sélection 3 à la sélection 4
         """
         votes_data = [
-            (1, 1),
-            (1, 4),
-            (3, 6),
-            (1, 2),
-            (1, 3),
-            (3, 10),
-            (3, 5),
-            (3, 7),
-            (3, 8),
-            (3, 9)
+            (1, 1, 3, date.today()),
+            (1, 4, 3, date.today()),
+            (3, 6, 3, date.today()),
+            (1, 2, 3, date.today()),
+            (1, 3, 3, date.today()),
+            (3, 10, 3, date.today()),
+            (3, 5, 3, date.today()),
+            (3, 7, 3, date.today()),
+            (3, 8, 3, date.today()),
+            (3, 9, 3, date.today())
         ]
         try:
             with self.connection.cursor() as cursor:
-                sql = "INSERT INTO vote (Id_Book, Id_JuryMember) VALUES (%s, %s)"
+                sql = "INSERT INTO vote (Id_Book, Id_JuryMember, Id_Selection, v_date) VALUES (%s, %s, %s, %s)"
                 cursor.executemany(sql, votes_data)
                 self.connection.commit()
                 print(f"{len(votes_data)} votes enregistrés avec succès !")
@@ -230,6 +240,4 @@ class VoteDao(Dao[Vote]):
             print(f"Erreur simulate_votes: {e}")
             self.connection.rollback()
             return False
-
-
 
