@@ -288,9 +288,9 @@ class SelectionDao(Dao[Selection]):
                         "INSERT INTO possess (Id_Book, Id_Selection) VALUES (%s, 1)",
                         (book['Id_Book'],)
                     )
-                    self.connection.commit()
-                    print("Réinitialisation terminée!\n")
-                    return True
+                self.connection.commit()
+                print("Réinitialisation terminée!\n")
+                return True
         except pymysql.MySQLError as e:
             print(f"Erreur lors de la réinitialisation: {e}")
             self.connection.rollback()
