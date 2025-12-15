@@ -168,6 +168,12 @@ class SelectionDao(Dao[Selection]):
 
                 if row:
                     new_selection_id = row["Id_Selection"]
+                    print(f"La sélection {new_number} existe déjà (Id: {new_selection_id})")
+                    # Supprimer les anciennes associations pour cette sélection
+                    cursor.execute(
+                        "DELETE FROM possess WHERE Id_Selection = %s",
+                        (new_selection_id,)
+                    )
                 else:
                     cursor.execute(
                         "INSERT INTO selection (s_date, s_number) VALUES (NOW(), %s)",
@@ -178,15 +184,9 @@ class SelectionDao(Dao[Selection]):
                 # 3. Déplacer les livres votés vers la nouvelle sélection
                 for book_id in voted_books:
                     cursor.execute(
-                        "SELECT 1 FROM possess WHERE Id_Book = %s AND Id_Selection = %s",
+                        "INSERT INTO possess (Id_Book, Id_Selection) VALUES (%s, %s)",
                         (book_id, new_selection_id)
                     )
-                    if not cursor.fetchone():
-                        # Insérer dans la nouvelle sélection
-                        cursor.execute(
-                            "INSERT INTO possess (Id_Book, Id_Selection) VALUES (%s, %s)",
-                            (book_id, new_selection_id)
-                        )
 
             self.connection.commit()
             print(f"Passage à la sélection {new_number} effectué !")
