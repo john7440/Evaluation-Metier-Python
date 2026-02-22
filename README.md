@@ -4,6 +4,8 @@
 - [Objectifs](#objectifs)
 - [Fonctionnalités](#fonctionnalités-principales)
 - [Technologies Utilisées](#technologies-utilisées)
+- [Installation](#installation)
+- [Mise en place de la base de données](#mise-en-place-de-la-base-de-données)
 
 ### Objectifs
 - Permettre la gestion des livres candidats au Prix Goncourt
@@ -36,4 +38,24 @@
 - Jupiter
 - GitHub
 
+### Installation
+
+```bash
+https://github.com/john7440/Evaluation-Metier-Python.git
+cd Evaluation-Metier-Python
+```
+### Ouvrir dans PyCharm
+Fichier -> Ouvrir -> Sélectionner le dossier du Projet
+
+### Mise en place de la Base de données
+
+#### Option 1: En utilisant un client MySQL
+1. Ouvrir le client MySQL/MariaDB
+2. Copier et coller le contenu de `bdd/goncourt.sql`
+3. Exécuter le Script
+
+#### Option 2: En ligne de commande
+```bash
+mysql -u root -p < bdd/goncourt.sql
+```
 
